@@ -37,7 +37,7 @@ export function Button({
     'inline-flex relative items-center gap-2 justify-center rounded-md py-2 px-3 text-sm outline-offset-2 transition active:transition-none disabled:cursor-not-allowed disabled:opacity-50',
     variantStyles[variant],
     className,
-    isLoading && 'invisible',
+    isLoading && 'text-opacity-0',
   );
 
   return (
