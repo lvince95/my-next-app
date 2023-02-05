@@ -53,10 +53,10 @@ const Home = ({
             }}
             className="mt-6 text-base text-zinc-600 dark:text-zinc-400"
           >
-            There isn&#39t much on my website at the moment, but feel free to
+            There isn&apos;t much on my website at the moment, but feel free to
             play around with the calculator and the fund deposits if you wish to
-            do so. I&#39ve written articles describing their implementation if
-            you&#39re interested in learning how they work.
+            do so. I&apos;ve written articles describing their implementation if
+            you&apos;re interested in learning how they work.
           </motion.p>
         </div>
       </Container>
