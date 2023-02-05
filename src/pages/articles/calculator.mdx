@@ -1,0 +1,324 @@
+import { ArticleLayout } from '@/components/Layout/ArticleLayout';
+
+export const meta = {
+  author: 'Vincent Lim',
+  date: '2023-02-03',
+  title: 'Implementing the Arithmetic Expression Calculator',
+  description:
+    'This article goes into some detail about how the calculator was implemented',
+};
+
+export default (props) => <ArticleLayout meta={meta} {...props} />;
+
+The Arithmetic Expression Calculator is designed to accept an input that will always consist of numbers and operators separated by spaces. Let us dive right into the implementation of the calculator used in this application.
+
+Before we dive into the nitty-gritty of things, let us first take a look at some of the utility functions/helpers that have been created.
+
+## Helper Functions
+
+The first helper function, `checkOperatorPriority`, is used to determine the priority of the current operation.
+
+```ts
+export const checkOperatorPriority = (operator: string): number => {
+  switch (operator) {
+    case '+':
+    case '-':
+      return 1;
+    case '*':
+    case '/':
+      return 2;
+    default:
+      return 0;
+  }
+};
+```
+
+The `checkOperatorPriority` function accepts a string as an argument, and returns either 2, 1, or 0 in the default case. The higher the number, the greater the priority of the operation. As we know, multiplication and division have a higher priority over addition and subtraction when it comes to the order of operations evaluated. Therefore, we can assign them a greater number to indicate the priority.
+
+The second helper function, `performOperation`, is used to perform an arithmetic operation when given 2 operands (numbers), and 1 operator as arguments.
+
+```ts
+export const performOperation = (
+  operator: string | undefined,
+  operand1: number | undefined,
+  operand2: number | undefined,
+): number => {
+  if (operand1 === undefined || operand2 === undefined) {
+    throw new Error('Invalid operand');
+  }
+
+  switch (operator) {
+    case '+':
+      return operand1 + operand2;
+    case '-':
+      return operand1 - operand2;
+    case '*':
+      return operand1 * operand2;
+    case '/':
+      return operand1 / operand2;
+    default:
+      throw new Error(`Unsupported operator: ${operator}`);
+  }
+};
+```
+
+Lastly, the `isOperator` function is used to check if the given input is an operator or not.
+
+```ts
+export const isOperator = (token: string): boolean => {
+  return token === '+' || token === '-' || token === '*' || token === '/';
+};
+```
+
+Pretty straightforward so far. `checkOperatorPriority` helps to determine the priority of the current operation, `performOperation` helps to evaluate a sub-expression of the arithmetic expression, and `isOperator` helps determine whether a given input is an operator or not. These functions are defined in the `/src/lib` directory.
+
+## Complete Function
+
+Let us move on to the meat of the matter now. The function that does the heavy work is `evaluateExpression`. Before breaking the implementation down, here is the whole code snippet.
+
+```ts
+export const calculate = (expression: string) => {
+  const operandStack: number[] = [];
+  const operatorStack: string[] = [];
+
+  // used for record purposes
+  const operationsStack: string[] = [];
+  const operators: string[] = [];
+
+  // split based on whitespaces for now. drawback is discussed in the article
+  // const tokens = expression.replace(' ', '').match(/[^\d()]+|[\d.]+/g);
+  const tokens = expression.split(/\s+/);
+
+  for (const token of tokens) {
+    if (token === '(') {
+      // push the left bracket and continue on.
+      operatorStack.push(token);
+    } else if (token === ')') {
+      // evaluates everything inside the bracket before proceeding
+      while (operatorStack[operatorStack.length - 1] !== '(') {
+        const operator = operatorStack.pop();
+        if (operator) operators.push(operator);
+        const operand2 = operandStack.pop();
+        const operand1 = operandStack.pop();
+        const result = performOperation(operator, operand1, operand2);
+        operationsStack.push(`${operand1} ${operator} ${operand2} = ${result}`);
+        operandStack.push(result);
+      }
+      operatorStack.pop();
+    } else if (isOperator(token)) {
+      // evaluates the operators in the stack
+      while (
+        operatorStack.length > 0 &&
+        operatorStack[operatorStack.length - 1] !== '(' &&
+        checkOperatorPriority(token) <=
+          checkOperatorPriority(operatorStack[operatorStack.length - 1])
+      ) {
+        const operator = operatorStack.pop();
+        if (operator) operators.push(operator);
+        const operand2 = operandStack.pop();
+        const operand1 = operandStack.pop();
+        const result = performOperation(operator, operand1, operand2);
+        operationsStack.push(`${operand1} ${operator} ${operand2} = ${result}`);
+        operandStack.push(result);
+      }
+      operatorStack.push(token);
+    } else {
+      operandStack.push(parseFloat(token));
+    }
+  }
+
+  // evaluate remaining operators that are leftover
+  while (operatorStack.length > 0) {
+    const operator = operatorStack.pop();
+    if (operator) operators.push(operator);
+    const operand2 = operandStack.pop();
+    const operand1 = operandStack.pop();
+    const result = performOperation(operator, operand1, operand2);
+    operationsStack.push(`${operand1} ${operator} ${operand2} = ${result}`);
+    operandStack.push(result);
+  }
+
+  return { result: +operandStack[0].toFixed(2), operationsStack, operators };
+};
+```
+
+Without further ado, it is time to break this down into manageable chunks.
+
+## Initialization
+
+We start off by initializing 3 arrays. The empty array set by `setOperations` is only for record purposes. The arrays that are actually used for the calculation are `operandStack` and `operatorStack`
+
+```ts
+const operandStack: number[] = [];
+const operatorStack: string[] = [];
+
+// used for record purposes
+const operationsStack: string[] = [];
+const operators: string[] = [];
+```
+
+They may be declared as arrays, but in this solution, they are treated as stacks. For the uninitiated, a stack is essentially a linear data structure in which elements can only inserted and deleted from the top. This is known as the LIFO (Last In First Out) principle.
+
+Only `operandStack` and `operatorStack` are used for the calculations. The other 2 arrays are used for storing the operations performed, and operators found in the expression. These will be used for data visualization at the end of the calculation (which you can see on the web page).
+
+## Parsing the input
+
+```ts
+const tokens = expression.split(/\s+/);
+```
+
+For the input, we are only accepting arithmetic expressions that are split based on the whitespaces between them. This is a major drawback for now, and ways to improve this are touched upon at the end.
+
+The expression that is passed in as the argument to the function is then split into different elements and placed in an array. Each operand and operator will be its own element in this array.
+
+## Looping through the array of operands and operators
+
+Let us begin looping through the array and begin our calculations!
+
+```js
+for (const token of tokens) {
+  if (token === '(') {
+    operatorStack.push(token);
+  }
+```
+
+Firstly, we check each element of the array and determine whether it is an operand or operator. In this for loop, we check for brackets first.
+
+## Handling Brackets in the array
+
+If a left bracket, `(` is encountered, we push this value into the `operatorStack`. Nothing else is done, because `(` just means that it is the start of a sub-expression.
+
+```js
+else if (token === ')') {
+  while (operatorStack[operatorStack.length - 1] !== '(') {
+    const operator = operatorStack.pop();
+    if (operator) operators.push(operator);
+    const operand2 = operandStack.pop();
+    const operand1 = operandStack.pop();
+    const result = performOperation(operator, operand1, operand2);
+    operationsStack.push(`${operand1} ${operator} ${operand2} = ${result}`);
+    operandStack.push(result);
+  }
+  operatorStack.pop();
+}
+```
+
+Upon encountering a right bracket `)`, we start a `while` loop that checks the topmost element of the stack. The while loop continues on until a left bracket `(` is found. Remember earlier, when I mentioned that `(` denotes the start of a sub-expression? Since everything between `(` and `)` is a sub-expression, we want to evaluate everything inside it. This can be done with the `while` loop implemented.
+
+Inside the while loop, we `pop()` the `operatorStack` once, and the `operandStack` twice. When popping the `operatorStack`, we push the operator found into the `operators` array for bookkeeping. We do an if check as well, because the result of the `pop()` operation on an empty array is going to be `undefined`.
+
+At minimum, two operands and one operator make up an arithmetic expression, which we evaluate using the `performOperation` helper.
+
+After the result has been calculated, we push the result back into the `operandStack`. This is because the result of those operations may still be required as part of other expressions. Thus, the while loop ends with all the expressions inside the brackets. The `operatorStack` is then popped to remove the leftover `(` at the conclusion of the while loop.
+
+You may have also noticed that we are pushing the expression being evaluated as a string into the `operationsStack` array. This is just for bookkeeping as well, and is not involved in any calculations.
+
+## Handling Operators + - \* / in the array
+
+With brackets handled, operators are next. We use the `isOperator` to check if the current token is an operator. If it is an operator, we begin a `while` loop with several conditions.
+
+```js
+else if (isOperator(token)) {
+  while (
+    operatorStack.length > 0 &&
+    operatorStack[operatorStack.length - 1] !== '(' &&
+    checkOperatorPriority(token) <= checkOperatorPriority(operatorStack[operatorStack.length - 1])
+  ) {
+    const operator = operatorStack.pop();
+    if (operator) operators.push(operator);
+    const operand2 = operandStack.pop();
+    const operand1 = operandStack.pop();
+    const result = performOperation(operator, operand1, operand2);
+    operationsStack.push(`${operand1} ${operator} ${operand2} = ${result}`);
+    operandStack.push(result);
+  }
+  operatorStack.push(token);
+}
+```
+
+The `while` loop will stop once any of the following conditions are satisfied:
+
+- if the `operatorStack` is empty.
+- if the operator below the current operator in the stack is a `(`
+- if the priority of the current operator element is greater than the previous operator element
+
+Otherwise, the while loop will continue and perform the calculations. At the conclution of the while loop, the current operator is pushed into the `operatorStack`.
+
+In this block of code, the priority of the operators are key. As an example to better illustrate how the `while` loop operates, consider the following:
+
+- A combination of consecutive operations of equal priority, like `+ + +`, `+ - +`, or `* * /` will result in the while loop continuing to perform the operations consecutively.
+- When there's a multiplication or division present, for example `+ * + /`, the while loop will stop whenever `/` or `*` is at the top of the `operandStack`
+
+If the current token is `+` or `-`, and the previous token is a `/` or `*`, we want to perform the `/` or `*` operations that are currently on the stack. Since `/` and `*` have a higher priority, they must be evaluated first before proceeding. Therefore, we must pop any preceding `/` and `*` off the stack.
+
+If the priority of the previous token is the same as the current token, the order doesn't matter and we can safely pop the stacks to perform one operation. At the end of the while loop (or if it is skipped), we push the current operator into the `operatorStack` regardless for future use.
+
+## Handling Numbers in the array
+
+With brackets and operators out of the way, it is only numbers left for us to handle.
+
+```js
+else {
+  operandStack.push(parseFloat(token));
+}
+```
+
+Luckily, handling numbers is very straightforward. We just need to push them to the `operandStack` whenever a number is encountered. Note that we use `parseFloat` here so that we can handle floating point numbers, and not just integers.
+
+## Clearing the current stacks after the array has been fully traversed
+
+We have finished looping through the array of elements, but we are not done yet. We need to take care of any elements that are still in the stacks. As such, we start with a simple `while` loop that continues as long as there is still an operator present in the `operatorStack`.
+
+```js
+while (operatorStack.length > 0) {
+  const operator = operatorStack.pop();
+  if (operator) operators.push(operator);
+  const operand2 = operandStack.pop();
+  const operand1 = operandStack.pop();
+  const result = performOperation(operator, operand1, operand2);
+  operationsStack.push(`${operand1} ${operator} ${operand2} = ${result}`);
+  operandStack.push(result);
+}
+
+return { result: +operandStack[0].toFixed(2), operationsStack, operators };
+```
+
+Priority and bracket checking is not required here, because those cases would have already been handled in the previous loops. After the while loop has finished looping, the `operandStack` will contain only one element, which is the final result of all the calculations. Meanwhile, the `operatorStack` will be empty, indicating that all of the operations have been completed.
+
+The object being returned at the end contains three things:
+
+- ## result: `+operandStack[0].toFixed(2)`
+  The final result of all the calculation in 2 decimal places.
+- ## operationsStack
+  An array containing all the arithmetic expressions evaluated as strings.
+- ## operators
+  An array containing all the different operators found and performed in the expression. Duplicates are allowed because we want to have a count of the operators.
+
+## Drawbacks
+
+As mentioned early on, one of the drawbacks to this implementation is the inability to handle expressions that do not have whitespaces between them. As such, the requirement for the input is quite strict, which is not ideal.
+
+Consider the following:
+
+Example A:
+`1 + 3 * 2 - -2`
+
+Example B:
+`1+3*2-2`
+
+Example C:
+`1+3*2--2`
+
+Let's assume we do the following:
+
+```ts
+const tokens = expression.replace(' ', '').match(/[^\d()]+|[\d.]+/g);
+```
+
+This will split the input appropriately with or without whitespaces. However, it will not parse example C correctly. This is because there is a negative number. In the regex we used, it treats any `-` operator found as the actual operator.
+
+For a regex to parse this input properly, a regex Lookbehind needs to be implemented. Essentially, we need the regex to check the preceding token whenever it encounters a `-`.
+
+If any operator or bracket precedes the `-`, we know it's a negative number. Therefore, we'll be able to split it sucessfully using this logic.
+
+That was very long and in-depth explanation, and I hope it helped anyone reading this!

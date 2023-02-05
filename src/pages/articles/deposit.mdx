@@ -1,0 +1,13 @@
+import { ArticleLayout } from '@/components/Layout/ArticleLayout';
+
+export const meta = {
+  author: 'Vincent Lim',
+  date: '2023-02-05',
+  title: 'Handling Fund Deposits',
+  description:
+    'This article goes into some detail about how the fund deposits were handled',
+};
+
+export default (props) => <ArticleLayout meta={meta} {...props} />;
+
+In this application, we can make multiple deposit plans. Essentially, each deposit plan is like a contract that specifies the frequency and amount of money that should be deposited into the assigned portfolio.
