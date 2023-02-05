@@ -1,0 +1,85 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  email        String        @unique
+  name         String?
+  posts        Post[]
+  portfolios   Portfolio[]
+  depositPlans DepositPlan[]
+  fundDeposits FundDeposit[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @default(now()) @updatedAt
+
+  @@map(name: "user")
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String?
+  published Boolean  @default(false)
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@map(name: "post")
+}
+
+model Portfolio {
+  id          Int           @id @default(autoincrement())
+  name        String
+  amount      Float
+  user        User          @relation(fields: [userId], references: [id])
+  userId      Int
+  depositPlan DepositPlan[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @default(now()) @updatedAt
+
+  @@map(name: "portfolio")
+}
+
+model DepositPlan {
+  id          Int       @id @default(autoincrement())
+  name        String
+  amount      Float
+  completed   Boolean   @default(false)
+  user        User      @relation(fields: [userId], references: [id])
+  userId      Int
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id])
+  portfolioId Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now()) @updatedAt
+
+  @@map(name: "deposit_plan")
+}
+
+model FundDeposit {
+  id        Int      @id @default(autoincrement())
+  amount    Float
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@map(name: "fund_deposit")
+}
+
+model Newsletter {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  createdAt DateTime @default(now())
+
+  @@map(name: "newsletter")
+}
