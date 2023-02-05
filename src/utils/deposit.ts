@@ -2,11 +2,6 @@ import { DepositPlan } from '@/deposit/types/deposit';
 import { FundDeposit } from '@/deposit/types/deposit';
 import { Portfolio } from '@/deposit/types/deposit';
 
-const depositFrequencyPriority = new Map([
-  ['One-Time', 1],
-  ['Monthly', 2],
-]);
-
 export const calculateAllocationOptimized = (
   depositPlans: DepositPlan[],
   fundDeposits: FundDeposit[],

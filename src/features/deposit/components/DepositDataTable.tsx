@@ -21,7 +21,7 @@ export const DepositDataTable = ({
   button,
   className,
   allowDelete = false,
-  handleRemove = () => {},
+  handleRemove = () => void undefined,
   showLess = false,
 }: DepositDataTableProps) => {
   return (

@@ -23,7 +23,6 @@ test('should render the form and accept inputs', async () => {
   });
 
   const user = userEvent.setup();
-  const handleNext = jest.fn();
 
   render(
     <>

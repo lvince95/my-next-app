@@ -1,6 +1,5 @@
 import { SimpleLayoutWithBackButtonAndProgress } from '@/components/Layout';
 import Head from 'next/head';
-import { useRouter } from 'next/router';
 import { ProgressStep } from '@/components/Progress';
 import { DepositPlanForm } from '@/deposit/components';
 
@@ -11,8 +10,6 @@ const depositFormSteps: ProgressStep[] = [
 ];
 
 const DepositPlanPage = () => {
-  const router = useRouter();
-
   return (
     <>
       <Head>

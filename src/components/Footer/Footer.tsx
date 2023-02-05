@@ -1,5 +1,4 @@
 import { Container } from '@/components/Layout/Container';
-import { SVGProps } from 'react';
 import { GithubIcon } from '../Icons/GithubIcon';
 
 const navigation = {

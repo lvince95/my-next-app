@@ -24,6 +24,7 @@ export const FundDepositForm = () => {
     if (depositPlans.length === 0) {
       router.push('/deposit');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const {

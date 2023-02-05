@@ -47,6 +47,7 @@ export const Notification = ({
     return () => {
       clearTimeout(timeId);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

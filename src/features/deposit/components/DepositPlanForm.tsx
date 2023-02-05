@@ -1,8 +1,7 @@
 import { Button } from '@/components/Elements/Button';
-import { string, z } from 'zod';
+import { z } from 'zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
 import { Input } from '@/components/Elements/Input';
 import { DepositDataTable } from './DepositDataTable';
 import { useDepositStore } from '@/stores/deposit';

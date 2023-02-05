@@ -15,7 +15,6 @@ const schema = z.object({
 
 test('should render and submit a basic Form component', async () => {
   const handleSubmit = jest.fn();
-  const user = userEvent.setup();
 
   render(
     <Form<typeof testData, typeof schema>

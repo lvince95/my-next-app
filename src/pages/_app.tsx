@@ -15,7 +15,7 @@ const App = (({ Component, pageProps }: AppProps) => {
   const router = useRouter();
 
   const usePrevious = (value: string) => {
-    let ref = useRef<string>();
+    const ref = useRef<string>();
 
     useEffect(() => {
       if (value) ref.current = value;
@@ -24,7 +24,7 @@ const App = (({ Component, pageProps }: AppProps) => {
     return ref.current;
   };
 
-  let previousPathname = usePrevious(router.pathname);
+  const previousPathname = usePrevious(router.pathname);
 
   return (
     <>

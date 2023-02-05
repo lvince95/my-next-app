@@ -54,13 +54,14 @@ const Deposit = () => {
             </h2>
             <p className="mt-2 text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-4xl">
               With typical market returns, you have to start young to secure
-              your future. With us, it's never too late to build your nest egg.
+              your future. With us, it&#39s never too late to build your nest
+              egg.
             </p>
             <p className="mt-6 text-lg leading-8 text-zinc-600 dark:text-zinc-400">
               Our application was built for investors like you who play by their
-              own rules and aren't going to let SEC regulations get in the way
-              of their dreams. If other investing tools are afraid to build it,
-              we have it.
+              own rules and aren&#39t going to let SEC regulations get in the
+              way of their dreams. If other investing tools are afraid to build
+              it, we have it.
             </p>
             <Button
               className="mt-8 w-full flex-none sm:text-lg lg:w-40"

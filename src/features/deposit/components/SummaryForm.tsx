@@ -134,13 +134,10 @@ export const SummaryForm = () => {
       router.push('/deposit/fund-deposit');
     }
 
-    const { portfolios, totalFundsAvailable } = calculateAllocation(
-      depositPlans,
-      fundDeposits,
-    );
+    const { portfolios } = calculateAllocation(depositPlans, fundDeposits);
 
     setPortfolios(portfolios);
-  }, [depositPlans, fundDeposits]);
+  }, [depositPlans, fundDeposits, router]);
 
   return (
     <>

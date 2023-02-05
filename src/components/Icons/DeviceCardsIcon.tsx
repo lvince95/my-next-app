@@ -1,7 +1,7 @@
 import { SVGProps, useId } from 'react';
 
 export const DeviceCardsIcon = (props: SVGProps<SVGSVGElement>) => {
-  let id = useId();
+  const id = useId();
 
   return (
     <svg viewBox="0 0 32 32" aria-hidden="true" {...props}>

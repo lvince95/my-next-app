@@ -8,7 +8,7 @@ import logoFacebook from '@/images/logos/facebook.svg';
 import logoStarbucks from '@/images/logos/starbucks.svg';
 
 export const Resume = () => {
-  let resume = [
+  const resume = [
     {
       company: 'Starbucks',
       title: 'Senior Coffee Taster',

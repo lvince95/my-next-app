@@ -20,7 +20,7 @@ export const WavyText = ({
     hidden: {
       opacity: 0,
     },
-    visible: (i: number = 1) => ({
+    visible: (i = 1) => ({
       opacity: 1,
       transition: { staggerChildren: duration, delayChildren: i * delay },
     }),

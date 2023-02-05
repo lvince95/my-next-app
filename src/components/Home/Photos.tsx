@@ -84,6 +84,7 @@ export const Photos = () => {
   useEffect(() => {
     sequence();
     sequenceReversed();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
