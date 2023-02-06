@@ -136,7 +136,6 @@ export const FundDepositForm = () => {
         className="mt-8"
         allowDelete={true}
         handleRemove={removeFundDeposit}
-        showLess={true}
       />
     </>
   );

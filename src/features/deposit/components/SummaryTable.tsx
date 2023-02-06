@@ -48,7 +48,6 @@ export const SummaryTable = ({ tables, className }: SummaryTableProps) => {
                       title=""
                       subTitle=""
                       allowDelete={false}
-                      showLess={data.name === 'Fund Deposits'}
                     />
                   </Disclosure.Panel>
                 </>

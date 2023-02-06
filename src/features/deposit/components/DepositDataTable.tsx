@@ -2,6 +2,7 @@ import clsx from 'clsx';
 import { ReactNode } from 'react';
 import { TrashIcon } from '@/icons/TrashIcon';
 import { DepositPlan, FundDeposit } from '../types/deposit';
+import { parseTableColumnHeader } from '@/utils/stringUtils';
 
 type DepositDataTableProps = {
   data: DepositPlan[] | FundDeposit[];
@@ -11,7 +12,6 @@ type DepositDataTableProps = {
   className?: string;
   allowDelete?: boolean;
   handleRemove?: (id: string) => void;
-  showLess?: boolean;
 };
 
 export const DepositDataTable = ({
@@ -22,7 +22,6 @@ export const DepositDataTable = ({
   className,
   allowDelete = false,
   handleRemove = () => void undefined,
-  showLess = false,
 }: DepositDataTableProps) => {
   return (
     <div className={clsx(className, 'px-4 sm:px-6 lg:px-8')}>
@@ -30,7 +29,12 @@ export const DepositDataTable = ({
         <div className="sm:flex-auto">
           <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
             {title}{' '}
-            <span className="text-zinc-600 dark:text-zinc-400">
+            <span
+              className={clsx(
+                !allowDelete && 'text-sm',
+                'text-zinc-600 dark:text-zinc-400',
+              )}
+            >
               - {data.length} {data.length === 1 ? 'item' : 'items'}{' '}
               {data.length === 0 ? 'found' : 'added'}
             </span>
@@ -46,52 +50,46 @@ export const DepositDataTable = ({
           <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
             <table className="min-w-full divide-y divide-gray-300">
               <thead>
-                <tr>
-                  {!showLess && data.length > 0 && (
-                    <th
-                      scope="col"
-                      className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-zinc-600 dark:text-zinc-400 sm:pl-6 md:pl-0"
-                    >
-                      Portfolio
-                    </th>
-                  )}
-                  {showLess && data.length > 0 && (
-                    <th
-                      scope="col"
-                      className="py-3.5 px-3 text-left text-sm font-semibold text-zinc-600 dark:text-zinc-400 sm:pl-6 md:pl-0"
-                    >
-                      Amount (USD)
-                    </th>
-                  )}
-                  {!showLess && data.length > 0 && (
-                    <th
-                      scope="col"
-                      className="py-3.5 px-3 text-left text-sm font-semibold text-zinc-600 dark:text-zinc-400"
-                    >
-                      Amount (USD)
-                    </th>
-                  )}
-                  {!showLess && data.length > 0 && (
-                    <th
-                      scope="col"
-                      className="py-3.5 px-3 text-left text-sm font-semibold text-zinc-600 dark:text-zinc-400"
-                    >
-                      Frequency
-                    </th>
-                  )}
-                  <th
-                    scope="col"
-                    className="relative py-3.5 pl-3 pr-4 sm:pr-6 md:pr-0"
-                  >
-                    <span className="sr-only">Edit</span>
-                  </th>
-                </tr>
+                {data.map((item) => (
+                  <tr key={item.id}>
+                    {Object.entries(item).map(([key], index) => {
+                      if (index === 1) {
+                        return (
+                          <th
+                            key={key}
+                            scope="col"
+                            className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-zinc-600 dark:text-zinc-400 sm:pl-6 md:pl-0"
+                          >
+                            {parseTableColumnHeader(key)}
+                          </th>
+                        );
+                      } else if (index > 1) {
+                        return (
+                          <td
+                            key={key}
+                            className="whitespace-nowrap py-4 px-3 text-sm text-zinc-600 dark:text-zinc-400"
+                          >
+                            {parseTableColumnHeader(key)}
+                          </td>
+                        );
+                      }
+                    })}
+                    {allowDelete && (
+                      <th
+                        scope="col"
+                        className="relative py-3.5 pl-3 pr-4 sm:pr-6 md:pr-0"
+                      >
+                        <span className="sr-only">Edit</span>
+                      </th>
+                    )}
+                  </tr>
+                ))}
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {data.map((item) => (
                   <tr key={item.id}>
-                    {Object.entries(item).map(([key, value]) => {
-                      if (key === 'portfolio') {
+                    {Object.entries(item).map(([key, value], index) => {
+                      if (index === 1) {
                         return (
                           <td
                             key={key}
@@ -100,7 +98,7 @@ export const DepositDataTable = ({
                             {value}
                           </td>
                         );
-                      } else if (key !== 'id') {
+                      } else if (index > 1) {
                         return (
                           <td
                             key={key}
