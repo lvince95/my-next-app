@@ -146,27 +146,6 @@ ExampleComponent.tsx
 Button.tsx
 ```
 
-This project uses PostgreSQL as the database (the provider can be changed easily). Models defined in the prisma schema must have tables that are named with lowercase and snake case. You can use the `@@map` API attribute as shown.
-
-```sh
-model User {
-  id           Int           @id @default(autoincrement())
-  email        String        @unique
-
-  @@map(name: "user")
-}
-
-model PostDetails {
-  id           Int           @id @default(autoincrement())
-  content      string
-  author       User          @relation(fields: [authorId], references: [id])
-
-  @@map(name: "post_details")
-}
-```
-
-With this model definition, Prisma automatically maps the `User` and `PostDetails` model to the `user` and `post_details` tables respectively in the underlying database.
-
 For a good reference, please check out the [Naming Cheatsheet](https://github.com/kettanaito/naming-cheatsheet)
 
 <h2 id="testing">Testing</h2>
@@ -181,4 +160,3 @@ As more features get added in the future, [Mock Service Worker](https://mswjs.io
 Example of Cypress e2e testing:
 
 https://user-images.githubusercontent.com/25463595/217047832-3a900fce-d2ad-4c84-b76f-11fc55d0a11b.mp4
-
