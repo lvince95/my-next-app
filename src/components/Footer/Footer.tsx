@@ -5,7 +5,7 @@ const navigation = {
   social: [
     {
       name: 'GitHub',
-      href: '#',
+      href: 'https://github.com/lvince95/my-next-app',
       icon: GithubIcon,
     },
   ],
