@@ -27,7 +27,7 @@ test('should render a clickable button', async () => {
 
 test('should render a form submit button', async () => {
   const user = userEvent.setup();
-  const handleSubmit = jest.fn();
+  const handleSubmit = jest.fn((e) => e.preventDefault());
 
   render(
     <form id="testForm" onSubmit={handleSubmit}>
