@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import { SimpleLayout } from '@/components/Layout';
-import { CalculatorForm } from '@/calculator/components';
+import { CalculatorForm } from '@/features/calculator';
 
 const Calculator = () => {
   return (
