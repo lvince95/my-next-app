@@ -3,4 +3,5 @@ module.exports = {
   plugins: ['eslint-plugin-cypress'],
   parser: '@typescript-eslint/parser',
   env: { 'cypress/globals': true },
+  extends: ['next'],
 };
