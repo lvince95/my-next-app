@@ -16,8 +16,8 @@
 
 <div align="center">
 
-  [![CI](https://github.com/lvince95/my-next-app/actions/workflows/ci.yml/badge.svg)](https://github.com/lvince95/my-next-app/actions/workflows/ci.yml)
-  
+[![CI](https://github.com/lvince95/my-next-app/actions/workflows/ci.yml/badge.svg)](https://github.com/lvince95/my-next-app/actions/workflows/ci.yml)
+
 </div>
 
 # [Live Demo](https://vincent-next.vercel.app)
@@ -36,6 +36,7 @@ This is just my attempt at exploring the best ways to build a fullstack web appl
 <h2 id="about">Application Overview</h2>
 
 This is a fullstack application that consists of:
+
 - [Next.js](https://nextjs.org)
 - [TailwindCSS](https://tailwindcss.com)
 - [TypeScript](https://www.typescriptlang.org)
@@ -115,7 +116,7 @@ You can also modify the ESLint configuration to allow imports to be done in the 
 
 This was inspired by how [NX](https://nx.dev/) handles libraries that are isolated but available to be used by the other modules. Think of a feature as a library or a module that is self-contained but can expose different parts to other features via its entry point.
 
-## Naming Conventions
+<h2 id="naming-convention">Naming Convention</h2>
 
 Variables will be named using `camelCase`
 
@@ -151,12 +152,13 @@ model User {
 
 model PostDetails {
   id           Int           @id @default(autoincrement())
-  content      string        @unique
-  author       User     @relation(fields: [authorId], references: [id])
+  content      string
+  author       User          @relation(fields: [authorId], references: [id])
 
   @@map(name: "post_details")
 }
 ```
+
 With this model definition, Prisma automatically maps the `User` and `PostDetails` model to the `user` and `post_details` tables respectively in the underlying database.
 
 For a good reference, please check out the [Naming Cheatsheet](https://github.com/kettanaito/naming-cheatsheet)
