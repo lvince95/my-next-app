@@ -17,7 +17,6 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@/calculator/*": ["./src/features/calculator/*"],
       "@/deposit/*": ["./src/features/deposit/*"],
       "@/icons/*": ["./src/components/Icons/*"]
     },

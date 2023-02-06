@@ -64,6 +64,14 @@ export const getOperatorName = (operator: string) => {
 };
 
 export const calculate = (expression: string) => {
+  const isValid = expression.match(/^[\d\s+\-*/().]+$/);
+
+  if (!isValid) {
+    throw new Error(
+      'Invalid expression. Only numbers and the `+`, `-`, `*`, `/`, `(`, `)` symbols are supported.',
+    );
+  }
+
   const operandStack: number[] = [];
   const operatorStack: string[] = [];
 

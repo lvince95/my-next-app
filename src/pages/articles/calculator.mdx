@@ -3,14 +3,15 @@ import { ArticleLayout } from '@/components/Layout/ArticleLayout';
 export const meta = {
   author: 'Vincent Lim',
   date: '2023-02-03',
-  title: 'Implementing the Arithmetic Expression Calculator',
+  title:
+    'Breaking down the formula used in the Arithmetic Expression Calculator',
   description:
-    'This article goes into some detail about how the calculator was implemented',
+    'This article goes into some detail about how the logic behind the calculations was implemented, as well as a drawback to the approach.',
 };
 
 export default (props) => <ArticleLayout meta={meta} {...props} />;
 
-The Arithmetic Expression Calculator is designed to accept an input that will always consist of numbers and operators separated by spaces. Let us dive right into the implementation of the calculator used in this application.
+The Arithmetic Expression Calculator is designed to accept an input that will always consist of numbers and operators separated by spaces. Let us dive right into the formula used by the calculator in the application.
 
 Before we dive into the nitty-gritty of things, let us first take a look at some of the utility functions/helpers that have been created.
 
@@ -78,6 +79,14 @@ Let us move on to the meat of the matter now. The function that does the heavy w
 
 ```ts
 export const calculate = (expression: string) => {
+  const isValid = expression.match(/^[\d\s+\-*/().]+$/);
+
+  if (!isValid) {
+    throw new Error(
+      'Invalid expression. Only numbers and the `+`, `-`, `*`, `/`, `(`, `)`, `.` symbols are supported.',
+    );
+  }
+
   const operandStack: number[] = [];
   const operatorStack: string[] = [];
 
@@ -143,6 +152,28 @@ export const calculate = (expression: string) => {
 ```
 
 Without further ado, it is time to break this down into manageable chunks.
+
+## Checking the validity of the input
+
+First, we need to check if the input is valid. Although we already have a zod schema on the form to validate the input, extra validation never hurts. For example, this function may be used elsewhere without pre-validation, or moved to the backend instead (where we'll need to revalidate since client-sided data can be manipulated).
+
+To check if the input can be parsed, we do the following:
+
+```ts
+const isValid = expression.match(/^[\d\s+\-*/().]+$/);
+if (!isValid) {
+  throw new Error(
+    'Invalid expression. Only numbers and the `+`, `-`, `*`, `/`, `(`, `)`, `.` symbols are supported.',
+  );
+}
+```
+
+The regex we use, `^[\d\s+\-*/().]+$`, is broken down as follows:
+
+- ^ and $ assert the start and end of the string, respectively, to ensure the entire string matches the pattern
+- \d matches any digit (0-9)
+- \s matches any whitespace character (including space, tab, newline, etc.)
+- `+`, `-`, `*`, `/`, `(`, `)`, `.` are matched literally as they are commonly used math symbols.
 
 ## Initialization
 
@@ -213,7 +244,7 @@ After the result has been calculated, we push the result back into the `operandS
 
 You may have also noticed that we are pushing the expression being evaluated as a string into the `operationsStack` array. This is just for bookkeeping as well, and is not involved in any calculations.
 
-## Handling Operators + - \* / in the array
+## Handling Operators `+`, `-`, `*`, `/` in the array
 
 With brackets handled, operators are next. We use the `isOperator` to check if the current token is an operator. If it is an operator, we begin a `while` loop with several conditions.
 
@@ -287,11 +318,11 @@ Priority and bracket checking is not required here, because those cases would ha
 
 The object being returned at the end contains three things:
 
-- ## result: `+operandStack[0].toFixed(2)`
+- ## result `number`
   The final result of all the calculation in 2 decimal places.
-- ## operationsStack
+- ## operationsStack `string[]`
   An array containing all the arithmetic expressions evaluated as strings.
-- ## operators
+- ## operators `string[]`
   An array containing all the different operators found and performed in the expression. Duplicates are allowed because we want to have a count of the operators.
 
 ## Drawbacks

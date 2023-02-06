@@ -1,7 +1,7 @@
 import { MinusIcon } from '@/icons/MinusIcon';
 import { PlusIcon } from '@/icons/PlusIcon';
 import { XMarkIcon } from '@/icons/XMarkIcon';
-import { countOperators, getOperatorName } from '@/utils/calculate';
+import { countOperators, getOperatorName } from '@/features/calculator';
 import clsx from 'clsx';
 
 type OperatorCardsProps = {

@@ -108,11 +108,7 @@ Importing things from other features should be done in the following way:
 
 and not
 
-`import {AwesomeComponent} from "@/features/awesome-feature/components/AwesomeComponent`
-
-You can also modify the ESLint configuration to allow imports to be done in the following way:
-
-`import {ExampleComponent} from "@/example-feature"`
+`import {ExampleComponent} from "@/features/example-feature/components/ExampleComponent`
 
 This was inspired by how [NX](https://nx.dev/) handles libraries that are isolated but available to be used by the other modules. Think of a feature as a library or a module that is self-contained but can expose different parts to other features via its entry point.
 

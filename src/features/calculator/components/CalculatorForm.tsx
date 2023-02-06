@@ -2,13 +2,19 @@ import { Button } from '@/components/Elements/Button';
 import { z } from 'zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { calculate } from '@/utils/calculate';
+import { calculate } from '@/features/calculator/utils/calculate';
 import { useState } from 'react';
 import { Input } from '@/components/Elements/Input';
 import { CalculationResult } from './CalculationResult';
 
 const CalculatorFormSchema = z.object({
-  mathExpression: z.string().min(1, 'Required'),
+  mathExpression: z
+    .string()
+    .min(1, 'Required')
+    .regex(
+      /^[\d\s+\-*/().]+$/,
+      'Invalid expression. Only numbers and the `+`, `-`, `*`, `/`, `(`, `)`, `.` symbols are supported.',
+    ),
 });
 
 type CalculatorFormValues = z.infer<typeof CalculatorFormSchema>;
@@ -53,7 +59,7 @@ export const CalculatorForm = () => {
         {
           type: 'focus',
           message:
-            'Failed to parse the expression. Please ensure that there are no spaces between the numbers and operators.',
+            'Failed to parse the expression. Please ensure that the expression is valid, and that there are no spaces between the numbers and operators.',
         },
         { shouldFocus: true },
       );
@@ -80,8 +86,9 @@ export const CalculatorForm = () => {
           </span>
         </h2>
         <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-          Only numbers and the + - * / ( ) operators are supported. Please
-          ensure that there are spaces between each number and operator.
+          Only numbers and the `+`, `-`, `*`, `/`, `(`, `)`, `.` symbols are
+          supported. Please ensure that there are spaces between each number and
+          operator.
         </p>
         <div className="mt-6 flex flex-col gap-4 lg:flex-row">
           <Input
