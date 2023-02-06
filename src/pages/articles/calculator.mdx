@@ -85,7 +85,7 @@ Let us move on to the meat of the matter now. The function that does the heavy w
 
 ```ts
 export const calculate = (expression: string) => {
-  const isValid = expression.match(/^[\d\s+\-*/().]+$/);
+  const isValid = expression.match(/^([-+/*]\d+(\.\d+)?)*/);
 
   if (!isValid) {
     throw new Error(
@@ -101,8 +101,13 @@ export const calculate = (expression: string) => {
   const operators: string[] = [];
 
   // split based on whitespaces for now. drawback is discussed in the article
-  // const tokens = expression.replace(' ', '').match(/[^\d()]+|[\d.]+/g);
   const tokens = expression.split(/\s+/);
+
+  if (tokens.length <= 1) {
+    throw new Error(
+      'Invalid expression. Spaces between each number and operator are required.',
+    );
+  }
 
   for (const token of tokens) {
     if (token === '(') {
@@ -166,7 +171,8 @@ First, we need to check if the input is valid. Although we already have a zod sc
 To check if the input can be parsed, we do the following:
 
 ```ts
-const isValid = expression.match(/^[\d\s+\-*/().]+$/);
+const isValid = expression.match(/^([-+/*]\d+(\.\d+)?)*/);
+
 if (!isValid) {
   throw new Error(
     'Invalid expression. Only numbers and the `+`, `-`, `*`, `/`, `(`, `)`, `.` symbols are supported.',
@@ -174,12 +180,13 @@ if (!isValid) {
 }
 ```
 
-The regex we use, `^[\d\s+\-*/().]+$`, is broken down as follows:
+The regex we use, `^([-+/*]\d+(\.\d+)?)*`, is broken down as follows:
 
-- ^ and $ assert the start and end of the string, respectively, to ensure the entire string matches the pattern
-- \d matches any digit (0-9)
-- \s matches any whitespace character (including space, tab, newline, etc.)
-- `+`, `-`, `*`, `/`, `(`, `)`, `.` are matched literally as they are commonly used math symbols.
+- `^` - beginning of the string
+- `[-+/*]` - one of these operators
+- `\d+` - one or more numbers
+- `(\.\d+)?` - an optional dot followed by one or more numbers
+- `()*` - the whole expression repeated zero or more times
 
 ## Initialization
 
@@ -202,11 +209,19 @@ Only `operandStack` and `operatorStack` are used for the calculations. The other
 
 ```ts
 const tokens = expression.split(/\s+/);
+
+if (tokens.length <= 1) {
+  throw new Error(
+    'Invalid expression. Spaces between each number and operator are required.',
+  );
+}
 ```
 
 For the input, we are only accepting arithmetic expressions that are split based on the whitespaces between them. This is a major drawback for now, and ways to improve this are touched upon at the end.
 
 The expression that is passed in as the argument to the function is then split into different elements and placed in an array. Each operand and operator will be its own element in this array.
+
+If the tokens array only has 1 or less elements, it means that the input was not valid. We should throw an error in this case.
 
 ## Looping through the array of operands and operators
 
