@@ -12,7 +12,7 @@ const CalculatorFormSchema = z.object({
     .string()
     .min(1, 'Required')
     .regex(
-      /^[\d\s+\-*/().]+$/,
+      /^([-+/*]\d+(\.\d+)?)*/,
       'Invalid expression. Only numbers and the `+`, `-`, `*`, `/`, `(`, `)`, `.` symbols are supported.',
     ),
 });
@@ -59,7 +59,7 @@ export const CalculatorForm = () => {
         {
           type: 'focus',
           message:
-            'Failed to parse the expression. Please ensure that the expression is valid, and that there are no spaces between the numbers and operators.',
+            'Invalid expression. Please ensure that the expression is valid, and that there are no spaces between the numbers and operators.',
         },
         { shouldFocus: true },
       );
@@ -80,10 +80,10 @@ export const CalculatorForm = () => {
         id="calculatorForm"
       >
         <h2 className="flex justify-between gap-8 text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-          <span>
+          <label htmlFor="mathExpression">
             Enter the arithmetic expression you would like to have calculated
             below
-          </span>
+          </label>
         </h2>
         <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
           Only numbers and the `+`, `-`, `*`, `/`, `(`, `)`, `.` symbols are

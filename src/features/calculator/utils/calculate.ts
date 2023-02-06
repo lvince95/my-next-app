@@ -64,7 +64,7 @@ export const getOperatorName = (operator: string) => {
 };
 
 export const calculate = (expression: string) => {
-  const isValid = expression.match(/^[\d\s+\-*/().]+$/);
+  const isValid = expression.match(/^([-+/*]\d+(\.\d+)?)*/);
 
   if (!isValid) {
     throw new Error(
@@ -82,6 +82,12 @@ export const calculate = (expression: string) => {
   // split based on whitespaces for now. drawback is discussed in the article
   // const tokens = expression.replace(' ', '').match(/[^\d()]+|[\d.]+/g);
   const tokens = expression.split(/\s+/);
+
+  if (tokens.length <= 1) {
+    throw new Error(
+      'Invalid expression. Spaces between each number and operator are required.',
+    );
+  }
 
   for (const token of tokens) {
     if (token === '(') {
