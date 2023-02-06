@@ -68,6 +68,8 @@ describe('e2e', () => {
         cy.findByRole('radio', {
           name: /monthly/i,
         }).should('be.checked');
+
+        cy.wait(500);
       }
 
       cy.findByRole('button', {
@@ -80,6 +82,8 @@ describe('e2e', () => {
     cy.findByRole('button', {
       name: /next/i,
     }).click();
+
+    cy.wait(500);
 
     for (const data of fundDeposits) {
       cy.findByRole('textbox', {

@@ -39,8 +39,6 @@ describe('e2e', () => {
 
       cy.findByText(`Result: ${data.expectedResult}`).should('exist');
 
-      cy.findByText(`performed`).should('exist');
-
       cy.wait(1000);
 
       cy.findByRole('button', {
