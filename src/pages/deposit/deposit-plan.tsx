@@ -1,7 +1,7 @@
 import { SimpleLayoutWithBackButtonAndProgress } from '@/components/Layout';
 import Head from 'next/head';
 import { ProgressStep } from '@/components/Progress';
-import { DepositPlanForm } from '@/deposit/components';
+import { DepositPlanForm } from '@/features/deposit';
 
 const depositFormSteps: ProgressStep[] = [
   { name: 'Deposit Plan', href: '/deposit/deposit-plan', status: 'current' },

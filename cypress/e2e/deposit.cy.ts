@@ -39,6 +39,8 @@ describe('e2e', () => {
   it('should handle depositing funds correctly', () => {
     cy.visit('/deposit');
 
+    cy.wait(500);
+
     cy.findByRole('button', {
       name: /deposit funds/i,
     }).click();

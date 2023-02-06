@@ -4,7 +4,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/components/Elements/Input';
 import { DepositDataTable } from './DepositDataTable';
-import { useDepositStore } from '@/stores/deposit';
+import { useDepositStore } from '@/features/deposit/stores/deposit';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 

@@ -17,7 +17,6 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@/deposit/*": ["./src/features/deposit/*"],
       "@/icons/*": ["./src/components/Icons/*"]
     },
     "types": ["node", "jest", "@testing-library/jest-dom"]

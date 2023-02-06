@@ -1,8 +1,6 @@
-import { DepositPlan } from '@/deposit/types/deposit';
-import { FundDeposit } from '@/deposit/types/deposit';
-import { Portfolio } from '@/deposit/types/deposit';
+import { DepositPlan, FundDeposit, Portfolio } from '@/features/deposit';
 
-export const calculateAllocationOptimized = (
+export const calculateAllocation = (
   depositPlans: DepositPlan[],
   fundDeposits: FundDeposit[],
 ) => {
@@ -11,6 +9,10 @@ export const calculateAllocationOptimized = (
   // get all available portfolios
   depositPlans.forEach((plan) =>
     portfolios.set(plan.portfolio, { name: plan.portfolio, allocation: 0 }),
+  );
+
+  portfolios.forEach((value, key) =>
+    console.log(`${key}: ${value.allocation}`),
   );
 
   // get the total funds available
@@ -104,5 +106,5 @@ export const calculateAllocationOptimized = (
     );
   }
 
-  return portfolios;
+  return { portfolios, totalFundsAvailable };
 };

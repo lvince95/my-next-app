@@ -1,4 +1,4 @@
-import { SummaryForm } from '@/deposit/components';
+import { SummaryForm } from '@/features/deposit';
 import { SimpleLayoutWithBackButtonAndProgress } from '@/components/Layout';
 import Head from 'next/head';
 import { ProgressStep } from '@/components/Progress';

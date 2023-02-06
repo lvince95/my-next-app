@@ -1,4 +1,4 @@
-import { FundDepositForm } from '@/deposit/components/FundDepositForm';
+import { FundDepositForm } from '@/features/deposit';
 import { SimpleLayoutWithBackButtonAndProgress } from '@/components/Layout';
 import Head from 'next/head';
 import { ProgressStep } from '@/components/Progress';

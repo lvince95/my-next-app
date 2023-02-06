@@ -1,4 +1,4 @@
-import { DepositPlan, FundDeposit } from '@/deposit/types/deposit';
+import { DepositPlan, FundDeposit } from '@/features/deposit';
 import { v4 as uuidv4 } from 'uuid';
 import { create } from 'zustand';
 
