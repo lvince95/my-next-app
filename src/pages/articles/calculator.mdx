@@ -13,6 +13,12 @@ export default (props) => <ArticleLayout meta={meta} {...props} />;
 
 The Arithmetic Expression Calculator is designed to accept an input that will always consist of numbers and operators separated by spaces. Let us dive right into the formula used by the calculator in the application.
 
+## Links to the source code in the repository for reference:
+
+- [The calculate function](https://github.com/lvince95/my-next-app/blob/main/src/features/calculator/utils/calculate.ts)
+- [Unit tests](https://github.com/lvince95/my-next-app/blob/main/src/features/calculator/__tests__/Calculator.test.tsx)
+- [Cypress e2e tests](https://github.com/lvince95/my-next-app/blob/main/cypress/e2e/calculator.cy.ts)
+
 Before we dive into the nitty-gritty of things, let us first take a look at some of the utility functions/helpers that have been created.
 
 ## Helper Functions
@@ -348,7 +354,7 @@ const tokens = expression.replace(' ', '').match(/[^\d()]+|[\d.]+/g);
 
 This will split the input appropriately with or without whitespaces. However, it will not parse example C correctly. This is because there is a negative number. In the regex we used, it treats any `-` operator found as the actual operator.
 
-For a regex to parse this input properly, a regex Lookbehind needs to be implemented. Essentially, we need the regex to check the preceding token whenever it encounters a `-`.
+For a regex to parse this input properly, a regex [Lookbehind](https://www.regular-expressions.info/lookaround.html) needs to be implemented. Essentially, we need the regex to check the preceding token whenever it encounters `-`.
 
 If any operator or bracket precedes the `-`, we know it's a negative number. Therefore, we'll be able to split it sucessfully using this logic.
 
