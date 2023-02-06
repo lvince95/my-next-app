@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import { Card } from '@/components/Layout/';
-import { SimpleLayoutWithAnimation } from '@/components/Layout/';
+import { SimpleLayout } from '@/components/Layout/';
 import { getAllArticles } from '@/utils/article';
 import { formatDate } from '@/utils/formatDate';
 import { InferGetStaticPropsType } from 'next';
@@ -48,7 +48,7 @@ const ArticlesIndex = ({
           content="My thoughts about topics I'm interested in such as programming."
         />
       </Head>
-      <SimpleLayoutWithAnimation
+      <SimpleLayout
         title="Writing on some of the things that I've done, as well as things that pique my interest."
         intro="All of the articles I'll be writing will be collected in chronological order."
       >
@@ -75,7 +75,7 @@ const ArticlesIndex = ({
             ))}
           </div>
         </div>
-      </SimpleLayoutWithAnimation>
+      </SimpleLayout>
     </>
   );
 };
