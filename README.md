@@ -32,6 +32,7 @@ This is just my attempt at exploring the best ways to build a fullstack web appl
 - <a href="#features">Features</a>
 - <a href="#project-structure">Project Structure</a>
 - <a href="#naming-convention">Naming Convention</a>
+- <a href="#testing">Testing</a>
 
 <h2 id="about">Application Overview</h2>
 
@@ -163,3 +164,17 @@ model PostDetails {
 With this model definition, Prisma automatically maps the `User` and `PostDetails` model to the `user` and `post_details` tables respectively in the underlying database.
 
 For a good reference, please check out the [Naming Cheatsheet](https://github.com/kettanaito/naming-cheatsheet)
+
+<h2 id="testing">Testing</h2>
+
+For this application, the testing tools used are:
+
+- Jest and React Testing Library for unit and integration tests
+- Cypress for integration and e2e tests
+
+As more features get added in the future, [Mock Service Worker](https://mswjs.io) will be added to mock api responses so that the frontend testing is decoupled from the backend.
+
+Example of Cypress e2e testing:
+
+https://user-images.githubusercontent.com/25463595/217047832-3a900fce-d2ad-4c84-b76f-11fc55d0a11b.mp4
+
