@@ -7,12 +7,16 @@
 </h1>
 
 <h3 align="center">
-  My personal website, fullstack and fully typesafe
+  My personal website, a fully typesafe Progressive Web App
 </h3>
 
 <h3 align="center">
-  Built with Next.js, TailwindCSS, Prisma, and tRPC
+  Built with Next.js, Typescript, TailwindCSS, Prisma, and tRPC
 </h3>
+
+<h1 align="center">
+  Still a Work-in-Progress (WIP)
+</h1>
 
 <div align="center">
 
