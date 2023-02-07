@@ -44,6 +44,8 @@ model Portfolio {
   updatedAt   DateTime      @default(now()) @updatedAt
 }
 
+// TODO: - allow multiple portfolios and amounts in 1 plan
+//       - add a priority
 model DepositPlan {
   id            Int       @id @default(autoincrement())
   name          String
