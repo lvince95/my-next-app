@@ -17,7 +17,7 @@ export const optimizedCalculateAllocation = (
   // keep a set for deposit frequncies to prevent duplicates
   const depositFrequencySet = new Set<DepositFrequency>();
 
-  // get all unique portfolios
+  // get all unique portfolios and frequencies
   depositPlans.forEach((plan) => {
     depositFrequencySet.add(plan.depositFrequency);
 
@@ -46,11 +46,11 @@ export const optimizedCalculateAllocation = (
   // loop through the different frequencies found. starts with the highest priority since the array has already been sorted in descending order
   sortedDepositFrequencies.forEach((frequency) => {
     /*
-    1. filter the deposit plans that match the current frequency passed in from the loop
-    2. sort the filtered deposit plans in descending order based on their own priority
-    3. sorts based on the date in ascending order
-    4. loop through each deposit plan using every() instead of forEach() so that we can break
-    out of the loop by returning false if we satisfy the condition early
+      1. filter the deposit plans that match the current frequency passed in from the loop
+      2. sort the filtered deposit plans in descending order based on their own priority
+      3. sorts based on the date in ascending order
+      4. loop through each deposit plan using every() instead of forEach() so that we can break
+      out of the loop by returning false if we satisfy the condition early
     */
     depositPlans
       .filter((dp) => dp.depositFrequency === frequency)
@@ -108,29 +108,5 @@ export const optimizedCalculateAllocation = (
   });
 
   // return the objects. before this step, there would be an API call to the backend to update all the values and the updatedAt date column (assuming we're using a relational database). However, we shall skip this for now.
-  // console.log('################');
-  // console.log('Total Allocated to Portfolios');
-
-  // portfolios.forEach((value) => {
-  //   console.log(`${value.name}: ${value.allocation}`);
-  // });
-
-  // console.log('################');
-
-  // depositPlans.forEach((value, index) => {
-  //   value.plans.forEach((p) => {
-  //     console.log(p.portfolio.name + ' ' + p.amount);
-  //   });
-  // });
-
   return { portfolios, totalFundsAvailable, depositPlans };
 };
-
-// console.log('################');
-// console.log('Total Allocated to Portfolios');
-
-// portfolios.forEach((value) => {
-//   console.log(`${value.name}: ${value.allocation}`);
-// });
-
-// console.log('################');
