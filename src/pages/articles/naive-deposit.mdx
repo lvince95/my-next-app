@@ -10,13 +10,6 @@ export const meta = {
 
 export default (props) => <ArticleLayout meta={meta} {...props} />;
 
-## Links to the source code in the repository for reference:
-
-- [The function to calculate the final allocation](https://github.com/lvince95/my-next-app/blob/main/src/features/deposit/utils/deposit.ts)
-- [The types used to define the data structure](https://github.com/lvince95/my-next-app/blob/main/src/features/deposit/types/deposit.d.ts)
-- [Prisma schema to define the database models](https://github.com/lvince95/my-next-app/blob/main/prisma/schema.prisma)
-- [Cypress e2e tests](https://github.com/lvince95/my-next-app/blob/main/cypress/e2e/deposit.cy.ts)
-
 In this application, we can make multiple deposit plans. Essentially, each deposit plan is like a contract that specifies the frequency and amount of money that should be deposited into the assigned portfolio.
 
 There will be 3 main entities. The deposit plans, fund deposits, and portfolios.
@@ -137,13 +130,13 @@ So, let's list out some of the drawbacks with this naive implementation:
 - ## Not scalable with too much code repetition
   - The function cannot respond to data changes in the future, and needs to be refactored
 
-To give more clarity, the dynamic data here would refer to things like the Deposit Frequency. In the case where there's only "One-Time" and "Monthly", then this code would work completely fine. However, what if more gets added in the future? We would need to do some copy pasting and a lot of code reptition if that's the case. Even in this case, there is a lot of code repetition already.
+To give more clarity, the dynamic data here would refer to things like the Deposit Frequency. In the case where there's only "One-Time" and "Monthly", this code would work completely fine. However, what if more gets added in the future? We would need to do some copy pasting and a lot of code reptition if that's the case. Even in this case, there is a lot of code repetition already.
 
 The obvious first step would be to refactor the parts that are checking for the frequency. This can be condensed down to one loop. We will not do this here yet though, as this was just an initial implementation without knowing the full scope of the requirements. Let's move on for now, as we will tackle and solve this issue in the next article.
 
 As mentioned previously, each deposit plan can only contain one portfolio. Another key assumption we make is that there is no priority assigned to the deposit plans. In the case that there are 2 or more deposit plans present, they will be processed at the same time. The proportional allocation will be based on the total amount of all deposit plans present at the time of the calculation.
 
-Here is an example of 2 different scenarios to illustrate the difference in my approach, and another valid approach. Honestly, the latter definitely seems more sensible in hindsight...
+Here is an example of 2 different scenarios to illustrate the difference between my approach and another scenario I considered.
 
 ### Given a $1000 deposit and the following plans:
 
@@ -200,4 +193,8 @@ Portfolio 2 = $400 + $250 = $650
 
 Total Funds Allocated = $1000
 
-That is all for this section for now. There are several ways to refactor and improve this solution, which will be discussed in the next article. Stay tuned for a much better implementation coming soon!
+## Closing Thoughts
+
+Of course, the 2nd scenario makes more sense in hindsight. In addition to many areas requiring improvement, the data stuctures and logic used will be completely overhauled in the next section. Still, this approach wasn't a bad attempt to start with.
+
+That is all for this section for now. We shall completely overhaul this implementation in the next article!

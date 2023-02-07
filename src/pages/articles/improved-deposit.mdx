@@ -4,11 +4,480 @@ export const meta = {
   author: 'Vincent Lim',
   date: '2023-02-07',
   title:
-    'From Zero to Hero: Overhauling the naive implementation of Fund Deposits',
+    'From Zero to Hero - Overhauling the naive implementation of Fund Deposits',
   description:
     'As was discussed in the previous article, the initial implementation of the Fund Deposit was not the best. Here, we talk about the improvements made to make it scalable and maintainable, as well some considerations made.',
 };
 
 export default (props) => <ArticleLayout meta={meta} {...props} />;
 
-## Placeholder
+## Links to the source code and more for reference:
+
+- [Code hosted on repl.it](https://replit.com/@lvince95/My-Assessment?v=1)
+- [The function to calculate the final allocation](https://github.com/lvince95/my-next-app/blob/main/src/features/deposit/utils/calculateAllocation.ts)
+- [The types used to define the data structure](https://github.com/lvince95/my-next-app/blob/main/src/features/deposit/types/depositV2.ts)
+- [Unit tests and the test data used](https://github.com/lvince95/my-next-app/tree/main/src/features/deposit/utils/__tests__)
+- [\[OLD\] Prisma schema to define the database models](https://github.com/lvince95/my-next-app/blob/main/prisma/schema.prisma)
+- [\[OLD\] Cypress e2e tests](https://github.com/lvince95/my-next-app/blob/main/cypress/e2e/deposit.cy.ts)
+
+## Introduction
+
+In the previous article, we went over the initial approach which had a lot of holes. However, we won't patch up those holes. Breaking down and rebuilding it from scratch is what we shall do! Let's dive into the code right now. Before we look at the actual calculation, let's go over the types we use. Some key things to note:
+
+### The implementation is scalable
+
+- Can accept newly added deposit frequencies and scale without requiring any code modifications
+- Can accept any number of portfolios in each deposit plan
+- Can have priorities to handle more scenarios than without
+- Can deal with the other cases where the funds deposited are not an exact match with the total allocation
+  - If the funds are more than the total allocation, the excess funds are returned with no issue
+  - If the funds are less than the total allocation, all available funds are used and there will be deposit plans that are partially paid, and others that are completely unpaid. These are tracked with the amount and completed status
+  - If these scenarios do not need to be handled, we can always just throw an error before the calculations begin, since we can sum up the total funds needed vs available funds at the very beginning.
+
+## Types
+
+For reference, here is the whole code related to typing the entities before we begin breaking it down individually. Please refer to the source code for some of the longer comments too.
+
+```ts
+// allows scaling e.g. adding new frequencies
+export const depositFrequency = [
+  { id: 1, name: 'One-Time', priority: 2 },
+  { id: 2, name: 'Monthly', priority: 1 },
+] as const;
+
+// extract the names of the deposit frequencies using index access
+export type DepositFrequency = (typeof depositFrequency)[number]['name'];
+
+// create a lookup table to get the priority of the frequency
+// auto scales based on the depositFrequency readonly array
+export const depositFrequencyMap = depositFrequency.reduce((acc, df) => {
+  acc.set(df.name, df.priority);
+  return acc;
+}, new Map<DepositFrequency, number>());
+
+export type Portfolio = {
+  id: number;
+  name: string;
+  allocation: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+// should be portfolioId ideally. default priority should be 0
+export type DepositPlan = {
+  id: number;
+  depositFrequency: DepositFrequency;
+  plans: { portfolioId: number; amount: number }[];
+  priority: number;
+  completed: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+/*
+  representation of the frontend type for the fund deposits
+  id is a string because it is assumed to be a random uuid. 
+  this id is not sent to the database because it is going to be created 
+  as a new entry in the database, with an auto-increment id set up. 
+  No dates are needed as well since those will be created by the backend.
+*/
+
+export type FundDeposit = {
+  id: number;
+  amount: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+// define the DTOs
+export type FundDepositDTO = { id: string } & Omit<
+  FundDeposit,
+  'id' | 'createdAt' | 'updatedAt'
+>;
+
+export type PortfolioDTO = Omit<
+  Portfolio,
+  'createdAt' | 'updatedAt' | 'allocation'
+> &
+  Partial<Pick<Portfolio, 'allocation'>>;
+
+export type DepositPlanDTO = {
+  id: string;
+} & Omit<DepositPlan, 'id' | 'updatedAt' | 'plans'> & {
+    plans: {
+      portfolio: PortfolioDTO;
+      amount: number;
+    }[];
+  };
+```
+
+That was quite long just for types, compared to the naive implementation. Let's break this down now:
+
+### Deposit Frequency
+
+```ts
+export const depositFrequency = [
+  { id: 1, name: 'One-Time', priority: 2 },
+  { id: 2, name: 'Monthly', priority: 1 },
+] as const;
+
+export type DepositFrequency = (typeof depositFrequency)[number]['name'];
+
+export const depositFrequencyMap = depositFrequency.reduce((acc, df) => {
+  acc.set(df.name, df.priority);
+  return acc;
+}, new Map<DepositFrequency, number>());
+```
+
+So, why not store this in a table? Well, we could! In most cases, we probably should as well. Having it in a lookup table using a Foreign Key (FK) to reference it is more scalable as well. Readonly const and/or enums require code change for new values to be added. It is generally fine if the data is quite static and rarely sees any changes.
+
+However, for this implementation, I wanted to play around with readonly consts. The deposit frequencies are stored in an array. Note that there is a priority attribute as well. This allows the priority of the frequencies to be changed.
+
+We then extract the type of the frequency by using indexed accesses on the readonly const declared.
+
+Lastly, we create a map of the frequencies with their priorities to function like a lookup table.
+
+### Portfolio, Deposit Plan, Fund Deposit
+
+```ts
+export type Portfolio = {
+  id: number;
+  name: string;
+  allocation: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type DepositPlan = {
+  id: number;
+  depositFrequency: DepositFrequency;
+  plans: { portfolioId: number; amount: number }[];
+  priority: number;
+  completed: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type FundDeposit = {
+  id: number;
+  amount: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
+```
+
+These were pretty straightforward to implement. These types are backend oriented, where the id is both a Primary Key (PK) and an auto-incrementing integer.
+
+In addition, the `DepositPlan` now accepts multiple portfolios!
+
+### Data Transfer Objects (DTO)
+
+```ts
+export type FundDepositDTO = { id: string } & Omit<
+  FundDeposit,
+  'id' | 'createdAt' | 'updatedAt'
+>;
+
+export type PortfolioDTO = Omit<
+  Portfolio,
+  'createdAt' | 'updatedAt' | 'allocation'
+> &
+  Partial<Pick<Portfolio, 'allocation'>>;
+
+export type DepositPlanDTO = {
+  id: string;
+} & Omit<DepositPlan, 'id' | 'updatedAt' | 'plans'> & {
+    plans: {
+      portfolio: PortfolioDTO;
+      amount: number;
+    }[];
+  };
+```
+
+What are these?! In short, they're used for facilitating the data transfer between the frontend and the backend. The models used for both sides may not be the same. For example, assuming the model on backend is always the same:
+
+- Frontend model when accepting inputs in a form is different (e.g.)
+- Frontend model used when submitting new objects to be created is different (e.g. no id, date fields).
+
+It wouldn't make much sense to include all 100 fields of an object on the frontend, if we only require 3 to be sent. Therefore, we leverage the use of DTOs to only include what we need to be transferred. This includes receiving data as well, not just sending. There may be data that we may not want or need to expose to the frontend.
+
+In this implementation, we're mostly replacing the numeric id on the backend, with a string id as our DTO. This is because we're temporarily assigning ids using uuids to objects on the frontend. We need some kind of id to track the objects with (that are not yet sent to the db) for tasks such as editing and deleting. However, this id will be omitted when sending the data to the backend, since the backend will assign it's own id (for example, an auto incrementing integer).
+
+Essentially, we create DTOs for the fields we need based on the types that we have already defined beforehand. We use Typescript utility types to extract/omit what we want, so that the DTOs will also be updated if the actual data model is changed. This allows the DTOs to be more scalable as well. If we just defined them manually, we would need to update all the DTOs as well if one of the models have changed.
+
+## Calculating the allocation
+
+Let's now dive into the calculations and logic involved. Here's the code for the implementation.
+
+```ts
+// calculate the allocation
+export const calculateAllocation = (
+  depositPlans: DepositPlanDTO[],
+  fundDeposits: FundDepositDTO[],
+) => {
+  // keep a map to keep track of the portfolio allocations
+  const portfolios = new Map<number, PortfolioDTO>();
+
+  // keep a set for deposit frequncies to prevent duplicates
+  const depositFrequencySet = new Set<DepositFrequency>();
+
+  // get all unique portfolios and frequencies
+  depositPlans.forEach((plan) => {
+    depositFrequencySet.add(plan.depositFrequency);
+
+    // initialize the given portfolio with 0 as the initial allocation
+    plan.plans.forEach((p) => {
+      portfolios.set(p.portfolio.id, { ...p.portfolio, allocation: 0 });
+    });
+  });
+
+  // get the total funds available
+  let totalFundsAvailable = fundDeposits.reduce(
+    (sum, deposit) => sum + deposit.amount,
+    0,
+  );
+
+  // sort the deposit frequencies in descending order based on the priority
+  const sortedDepositFrequencies = Array.from(depositFrequencySet).sort(
+    (a, b) => {
+      return (
+        // undefined check needed because of typescript's limitation
+        (depositFrequencyMap.get(b) || 0) - (depositFrequencyMap.get(a) || 0)
+      );
+    },
+  );
+
+  // loop through the different frequencies found.
+  // starts with the highest priority since the array
+  // has already been sorted in descending order
+
+  /*
+      1. filter the deposit plans that match the current 
+         frequency passed in from the loop
+      2. sort the filtered deposit plans in 
+         descending order based on their own priority
+      3. sorts based on the date in ascending order
+      4. loop through each deposit plan using every() 
+         instead of forEach() so that we can break out of the 
+         loop by returning false if we satisfy the condition early
+    */
+
+  sortedDepositFrequencies.forEach((frequency) => {
+    depositPlans
+      .filter((dp) => dp.depositFrequency === frequency)
+      .sort((a, b) => b.priority - a.priority)
+      .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+      .every((dp) => {
+        // break out of the current deposit plan loop
+        // when no more funds are left
+        if (totalFundsAvailable <= 0) return false;
+
+        // get the total amount to be allocated
+        // in the current deposit plan
+        const dpAllocation = dp.plans.reduce(
+          (sum, plan) => sum + plan.amount,
+          0,
+        );
+
+        // check if the totalFundsAvailable is greater
+        // than the total allocation
+        // if there are not enough funds, we can only pay the minimum
+        // if the funds exceed the total allocation,
+        // we only pay the total allocation and not more
+        const fundsUsed =
+          totalFundsAvailable >= dpAllocation
+            ? dpAllocation
+            : totalFundsAvailable;
+
+        // get the proportional allocation
+        const proportionalAllocation = fundsUsed / dpAllocation;
+
+        // loop through each portfolio and the
+        // specified amount to be allocated
+        dp.plans.forEach((p) => {
+          // check if a previous allocation exists in the map
+          const prevAllocation =
+            portfolios.get(p.portfolio.id)?.allocation ?? 0;
+
+          // calculate the amount to be allocated
+          // based on the calulcated proportion
+          const amountAllocated = p.amount * proportionalAllocation;
+
+          // updates the portfolio map to reflect the added allocation
+          portfolios.set(p.portfolio.id, {
+            ...p.portfolio,
+            allocation: prevAllocation + amountAllocated,
+          });
+
+          // IMPORTANT: also reduce the amount in the deposit plan
+          // to indicate that there has been a payment made.
+          // If this is not done, there is no indication if
+          // the plan has been paid yet or not
+          p.amount -= amountAllocated;
+
+          // mark the current deposit plan as completely paid off
+          // for bookkeeping and filtering purposes
+          if (p.amount === 0) dp.completed = true;
+
+          // updates the total funds we have left by deducting
+          // it with the amount that has been allocated this iteration
+          totalFundsAvailable -= amountAllocated;
+        });
+
+        // continue the loop
+        return true;
+      });
+  });
+
+  // return the objects. before this step,
+  // there would be an API call to the backend
+  // to update all the values and the updatedAt date column
+  // (assuming we're using a relational database).
+  // However, we shall skip this for now.
+
+  return { portfolios, totalFundsAvailable, depositPlans };
+};
+```
+
+Honestly, the comments do a pretty good job of explaining each step of the process and the reasons why. Regardless, I will still go over some of my thought processes since it may add more clarity.
+
+```ts
+// keep a map to keep track of the portfolio allocations
+const portfolios = new Map<number, PortfolioDTO>();
+// keep a set for deposit frequncies to prevent duplicates
+const depositFrequencySet = new Set<DepositFrequency>();
+```
+
+We keep a map for portfolios because we want to do 2 things:
+
+- store all the available, unique/distinct portfolios. no duplicates
+- continuously track and update the allocation
+
+Since Map keys are unique, and can contain an object as its value, it is the perfect data structure to use here.
+
+As for the deposit frequencies, we only get access to it's name. We also do not want duplicates because we want to find out how many frequencies we are dealing with. As such, a Set is a good choice here.
+
+```ts
+// get all unique portfolios and frequencies
+depositPlans.forEach((plan) => {
+  depositFrequencySet.add(plan.depositFrequency);
+
+  // initialize the given portfolio with 0 as the initial allocation
+  plan.plans.forEach((p) => {
+    portfolios.set(p.portfolio.id, { ...p.portfolio, allocation: 0 });
+  });
+});
+```
+
+We loop through all the deposit plans to find all the portfolios available. We set them in the map we initialized earlier, and give it a default value of 0 for the allocation since no calculations have been made yet.
+
+At the same time, we also find all the distinct deposit frequencies available, and add it to the set.
+
+```ts
+// get the total funds available
+let totalFundsAvailable = fundDeposits.reduce(
+  (sum, deposit) => sum + deposit.amount,
+  0,
+);
+
+// sort the deposit frequencies in descending order based on the priority
+const sortedDepositFrequencies = Array.from(depositFrequencySet).sort(
+  (a, b) => {
+    return (
+      // undefined check needed because of typescript's limitation
+      (depositFrequencyMap.get(b) || 0) - (depositFrequencyMap.get(a) || 0)
+    );
+  },
+);
+```
+
+First, we calculate the total funds we have at our disposal and store it in a variable that can be updated.
+
+Next, we want to sort the frequencies we have. We need to determine the order in which we process the plans, and the first metric we will use is the given frequency.
+
+```ts
+sortedDepositFrequencies.forEach((frequency) => {
+  depositPlans
+    .filter((dp) => dp.depositFrequency === frequency)
+    .sort((a, b) => b.priority - a.priority)
+    .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+    .every((dp) => {
+      if (totalFundsAvailable <= 0) return false;
+```
+
+We start by looping through the available frequencies, starting with the frequency with the highest priority (the array has been sorted previously).
+
+Next, we need to sort the plans themselves by their priority as well. A given plan may have a higher priority than others, which means that it should be processed first. In addition to the priority (which may be all equal), we also sort them by the date after. This is to handle cases where plans have the same priority, which would mean that they'll need to be sorted with a sensible value, which is usually the created date.
+
+Now that we have filtered the deposit plans to have the correct frequency, and are ordered by priority and date, we loop through the filtered and sorted array. We use `every()` here so that we can break out of the loop by returning false if we run out of funds to allocate.
+
+```ts
+const dpAllocation = dp.plans.reduce((sum, plan) => sum + plan.amount, 0);
+
+const fundsUsed =
+  totalFundsAvailable >= dpAllocation ? dpAllocation : totalFundsAvailable;
+
+const proportionalAllocation = fundsUsed / dpAllocation;
+```
+
+Next, in the current plan of the current iteration, we check the total amount that needs to be allocated by summing all the amounts listed for each portfolio in the plan.
+
+With the total allocation required for the current plan, we then check if we have enough funds by using the variable we created near the beginning. The 2 possible cases to handle are:
+
+- If we have enough funds, we pay off the total allocation. Subtract the total funds we have by the total allocation to keep track of how much we have left
+- Otherwise, we use up our remaining funds to partially allocate the remaining funds
+
+For individual allocation, we get the amount by using the ratio of their allocations. We can essentially just divide the funds we have over the sum of all the allocations to get a factor that we can use.
+
+```ts
+dp.plans.forEach((p) => {
+  const prevAllocation = portfolios.get(p.portfolio.id)?.allocation ?? 0;
+
+  const amountAllocated = p.amount * proportionalAllocation;
+
+  portfolios.set(p.portfolio.id, {
+    ...p.portfolio,
+    allocation: prevAllocation + amountAllocated,
+  });
+});
+```
+
+With the ratio to be allocated settled, we now loop through each portfolio and amount to be allocated in each deposit plan.
+
+We need to check if the portfolio has already been allocated some funds beforehand. If they have, we'll need to update the allocation (not replace).
+
+```ts
+  p.amount -= amountAllocated;
+
+  if (p.amount === 0) dp.completed = true;
+
+  totalFundsAvailable -= amountAllocated;
+  });
+
+// continue the loop
+return true;
+```
+
+Notice here that we also subtract of the amount that the portfolio has been allocated in the deposit plan. We do this because we need some way to know how much remaining needs to be paid off (assuming it's a partial payment due to lack of funds).
+
+If the deposit plan has been completely paid off, we can mark it as true and continue on.
+
+Lastly, we subtract the funds we have by the amount that we have paid off so that we can continue the loop with the correct amount of funds leftover. Remember that the loop will break if the total funds have reached 0.
+
+```ts
+return { portfolios, totalFundsAvailable, depositPlans };
+```
+
+Finally, we return the result of all the calculations! We actually return 3 things here, because they're all pieces of information that the frontend could use.
+
+- portoflios: `Map<number, PortfolioDTO>`
+  - we can use the portfolios to extract information regarding the final allocation to each portfolio
+- totalFundsAvailable: `number`
+  - in case there are leftover funds from depositing an amount greater than the total allocation
+- depositPlans: `DepositPlanDTO[]`
+
+  - the list of deposit plans used. we can check the completion/paid status and leftover amount (if any).
+
+  ## Closing Thoughts
+
+  Well, that was certainly very long. If you made it to the end, you can clearly see how it is a vast improvement over the naive implementation! Thank you for reading my rambling thoughts.
