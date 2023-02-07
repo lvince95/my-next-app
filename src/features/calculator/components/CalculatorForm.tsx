@@ -59,7 +59,7 @@ export const CalculatorForm = () => {
         {
           type: 'focus',
           message:
-            'Invalid expression. Please ensure that the expression is valid, and that there are no spaces between the numbers and operators.',
+            'Invalid expression. Please ensure that the expression is valid, and that there are spaces between the numbers and operators.',
         },
         { shouldFocus: true },
       );
