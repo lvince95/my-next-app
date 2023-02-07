@@ -54,7 +54,7 @@ describe('e2e', () => {
         name: /portfolio name/i,
       }).type(data.portfolio);
 
-      cy.findByRole('textbox', {
+      cy.findByRole('spinbutton', {
         name: /amount/i,
       }).type(data.amount.toString());
 
@@ -88,7 +88,7 @@ describe('e2e', () => {
     cy.wait(500);
 
     for (const data of fundDeposits) {
-      cy.findByRole('textbox', {
+      cy.findByRole('spinbutton', {
         name: /amount/i,
       }).type(data.amount.toString());
 

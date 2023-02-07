@@ -9,7 +9,9 @@ import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
 const FundDepositFormSchema = z.object({
-  amount: z.number().min(1, 'Required'),
+  amount: z
+    .number({ invalid_type_error: 'Amount must be a valid number' })
+    .min(1, 'Required'),
 });
 
 export type FundDepositFormValues = z.infer<typeof FundDepositFormSchema>;
@@ -77,7 +79,7 @@ export const FundDepositForm = () => {
                         </div>
                         <Input
                           id="amount"
-                          type="text"
+                          type="number"
                           className="mt-1 block w-full pl-7 pr-12"
                           placeholder="0.00"
                           aria-label="fund deposit amount"
