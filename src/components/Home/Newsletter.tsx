@@ -40,7 +40,7 @@ export const Newsletter = () => {
   return (
     <>
       <Form<NewsletterForm, typeof schema>
-        className="rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40"
+        className="rounded-2xl border border-zinc-100 p-6 shadow dark:border-zinc-700/40"
         onSubmit={submitHandler}
         schema={schema}
       >

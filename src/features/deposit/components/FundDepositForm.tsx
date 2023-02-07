@@ -58,10 +58,10 @@ export const FundDepositForm = () => {
           <div className="mt-5 md:col-span-2 md:mt-0">
             <form
               onSubmit={handleSubmit(onSubmit)}
-              className="border border-zinc-100 p-6 dark:border-zinc-700/40"
+              className="rounded-2xl border border-zinc-100 shadow dark:border-zinc-700/40"
               id="fundDepositForm"
             >
-              <div className="overflow-hidden shadow sm:rounded-md">
+              <div className="overflow-hidden ">
                 <div className="px-4 py-5 sm:p-6">
                   <div className="grid grid-cols-6 gap-6">
                     <div className="col-span-6 sm:col-span-6">

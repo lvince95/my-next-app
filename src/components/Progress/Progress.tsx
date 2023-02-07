@@ -37,7 +37,7 @@ export const Progress = ({ steps }: ProgressProps) => {
                   className="relative flex h-8 w-8 items-center justify-center rounded-full bg-teal-600 hover:bg-teal-900"
                 >
                   <CheckIcon
-                    className="h-5 w-5 dark:stroke-zinc-100"
+                    className="h-5 w-5 stroke-white dark:stroke-zinc-100"
                     aria-hidden="true"
                   />
                   <span className="sr-only">{step.name}</span>

@@ -16,14 +16,7 @@ export const ModeToggle = () => {
       '(prefers-color-scheme: dark)',
     );
 
-    if (darkModeMediaQuery) {
-      console.warn(
-        'Using light theme as the system default is bad for your eyes. Please change your system default color scheme to dark mode and save your eyesight before it is too late!',
-      );
-    }
-
-    // const isSystemDarkMode = darkModeMediaQuery.matches;
-    const isSystemDarkMode = true;
+    const isSystemDarkMode = darkModeMediaQuery.matches;
     const isDarkMode = document.documentElement.classList.toggle('dark');
 
     if (isDarkMode === isSystemDarkMode) {
