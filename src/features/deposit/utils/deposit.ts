@@ -11,10 +11,6 @@ export const calculateAllocation = (
     portfolios.set(plan.portfolio, { name: plan.portfolio, allocation: 0 }),
   );
 
-  portfolios.forEach((value, key) =>
-    console.log(`${key}: ${value.allocation}`),
-  );
-
   // get the total funds available
   let totalFundsAvailable = fundDeposits.reduce(
     (sum, deposit) => sum + deposit.amount,
@@ -26,8 +22,6 @@ export const calculateAllocation = (
     .filter((plan) => plan.depositFrequency === 'One-Time')
     .reduce((sum, plan) => sum + plan.amount, 0);
 
-  console.log('Total Allocation One-Time: ' + totalAllocationOneTime);
-
   // get the funds available for one-time deposits
   const totalFundsOneTime =
     totalFundsAvailable >= totalAllocationOneTime
@@ -37,10 +31,6 @@ export const calculateAllocation = (
   // get the proportional allocation
   const proportionalAllocationOneTime =
     totalFundsOneTime / totalAllocationOneTime;
-
-  console.log(
-    'Proportional Allocation One-Time: ' + proportionalAllocationOneTime,
-  );
 
   // assign each portfolio their appropriate values.
   depositPlans
@@ -56,10 +46,6 @@ export const calculateAllocation = (
       });
     });
 
-  portfolios.forEach((value, key) =>
-    console.log(`One-Time - ${key}: ${value.allocation}`),
-  );
-
   // get the remaining funds available after completing the one-time deposits
   totalFundsAvailable -= totalAllocationOneTime;
 
@@ -69,23 +55,15 @@ export const calculateAllocation = (
       .filter((plan) => plan.depositFrequency === 'Monthly')
       .reduce((sum, plan) => sum + plan.amount, 0);
 
-    console.log('Total Allocation Monthly: ' + totalAllocationMonthly);
-
     // get the funds available for monthly deposits
     const totalFundsMonthly =
       totalFundsAvailable >= totalAllocationMonthly
         ? totalAllocationMonthly
         : totalFundsAvailable;
 
-    console.log('Total Funds Monthly: ' + totalFundsMonthly);
-
     // get the proportional allocation
     const proportionalAllocationMonthly =
       totalFundsMonthly / totalAllocationMonthly;
-
-    console.log(
-      'Proportional Allocation Monthly: ' + proportionalAllocationMonthly,
-    );
 
     // assign each portfolio their appropriate values.
     depositPlans
@@ -100,10 +78,6 @@ export const calculateAllocation = (
             plan.amount * proportionalAllocationMonthly,
         });
       });
-
-    portfolios.forEach((value, key) =>
-      console.log(`Monthly - ${key}: ${value.allocation}`),
-    );
   }
 
   return { portfolios, totalFundsAvailable };

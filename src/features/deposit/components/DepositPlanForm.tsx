@@ -6,12 +6,7 @@ import { Input } from '@/components/Elements/Input';
 import { DepositDataTable } from './DepositDataTable';
 import { useDepositStore } from '@/features/deposit/stores/deposit';
 import { useRouter } from 'next/router';
-import { DepositPlan } from '../types/deposit';
-
-const paymentFrequency = [
-  { id: 1, title: 'One-Time' },
-  { id: 2, title: 'Monthly' },
-];
+import { DepositPlan, paymentFrequency } from '../types/deposit';
 
 const DepositPlanFormSchema = z.object({
   portfolio: z.string().min(1, 'Required'),

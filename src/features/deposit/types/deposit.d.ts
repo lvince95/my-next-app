@@ -14,3 +14,8 @@ export type Portfolio = {
   name: string;
   allocation: number;
 };
+
+export const paymentFrequency = [
+  { id: 1, title: 'One-Time' },
+  { id: 2, title: 'Monthly' },
+] as const;
