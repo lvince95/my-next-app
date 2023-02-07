@@ -3,11 +3,200 @@ import { ArticleLayout } from '@/components/Layout/ArticleLayout';
 export const meta = {
   author: 'Vincent Lim',
   date: '2023-02-05',
-  title: 'Handling Fund Deposits',
+  title: 'Naive implementation of the Fund Deposit feature',
   description:
-    'This article goes into some detail about how the fund deposits were handled',
+    'In this article, we explore what was done to implement the Fund Deposit feature initially. Requirements gathering was not possible while this was being developed. Some of the grievances with the approach and data model used is discussed as well.',
 };
 
 export default (props) => <ArticleLayout meta={meta} {...props} />;
 
+## Links to the source code in the repository for reference:
+
+- [The function to calculate the final allocation](https://github.com/lvince95/my-next-app/blob/main/src/features/deposit/utils/deposit.ts)
+- [The types used to define the data structure](https://github.com/lvince95/my-next-app/blob/main/src/features/deposit/types/deposit.d.ts)
+- [Prisma schema to define the database models](https://github.com/lvince95/my-next-app/blob/main/prisma/schema.prisma)
+- [Cypress e2e tests](https://github.com/lvince95/my-next-app/blob/main/cypress/e2e/calculator.cy.ts)
+
 In this application, we can make multiple deposit plans. Essentially, each deposit plan is like a contract that specifies the frequency and amount of money that should be deposited into the assigned portfolio.
+
+There will be 3 main entities. The deposit plans, fund deposits, and portfolios.
+
+```ts
+type DepositPlan = {
+  id: string;
+  // in a real scenario, this would be the portfolio id
+  portfolio: string;
+  amount: number;
+  depositFrequency: 'One-Time' | 'Monthly';
+};
+
+type FundDeposit = {
+  id: string;
+  amount: number;
+};
+
+type Portfolio = {
+  name: string;
+  allocation: number;
+};
+```
+
+There is 1 important assumption that we make - a deposit plan cannot contain more than 1 portfolio.
+
+The function used to calculate the final allocation is as follows:
+
+```ts
+const calculateAllocation = (
+  depositPlans: DepositPlan[],
+  fundDeposits: FundDeposit[],
+) => {
+  const portfolios = new Map<string, Portfolio>();
+
+  // get all available portfolios
+  depositPlans.forEach((plan) =>
+    portfolios.set(plan.portfolio, { name: plan.portfolio, allocation: 0 }),
+  );
+
+  // get the total funds available
+  let totalFundsAvailable = fundDeposits.reduce(
+    (sum, deposit) => sum + deposit.amount,
+    0,
+  );
+
+  // get the allocation for one-time deposits
+  const totalAllocationOneTime = depositPlans
+    .filter((plan) => plan.depositFrequency === 'One-Time')
+    .reduce((sum, plan) => sum + plan.amount, 0);
+
+  // get the funds available for one-time deposits
+  const totalFundsOneTime =
+    totalFundsAvailable >= totalAllocationOneTime
+      ? totalAllocationOneTime
+      : totalFundsAvailable;
+
+  // get the proportional allocation
+  const proportionalAllocationOneTime =
+    totalFundsOneTime / totalAllocationOneTime;
+
+  // assign each portfolio their appropriate values.
+  depositPlans
+    .filter((plan) => plan.depositFrequency === 'One-Time')
+    .forEach((plan) => {
+      const prevAllocation = portfolios.get(plan.portfolio);
+
+      return portfolios.set(plan.portfolio, {
+        name: plan.portfolio,
+        allocation:
+          (prevAllocation ? prevAllocation.allocation : 0) +
+          plan.amount * proportionalAllocationOneTime,
+      });
+    });
+
+  // get the remaining funds available after completing the one-time deposits
+  totalFundsAvailable -= totalAllocationOneTime;
+
+  if (totalFundsAvailable > 0) {
+    // get the allocation for monthly deposits
+    const totalAllocationMonthly = depositPlans
+      .filter((plan) => plan.depositFrequency === 'Monthly')
+      .reduce((sum, plan) => sum + plan.amount, 0);
+
+    // get the funds available for monthly deposits
+    const totalFundsMonthly =
+      totalFundsAvailable >= totalAllocationMonthly
+        ? totalAllocationMonthly
+        : totalFundsAvailable;
+
+    // get the proportional allocation
+    const proportionalAllocationMonthly =
+      totalFundsMonthly / totalAllocationMonthly;
+
+    // assign each portfolio their appropriate values.
+    depositPlans
+      .filter((plan) => plan.depositFrequency === 'Monthly')
+      .forEach((plan) => {
+        const prevAllocation = portfolios.get(plan.portfolio);
+
+        return portfolios.set(plan.portfolio, {
+          name: plan.portfolio,
+          allocation:
+            (prevAllocation ? prevAllocation.allocation : 0) +
+            plan.amount * proportionalAllocationMonthly,
+        });
+      });
+  }
+
+  return { portfolios, totalFundsAvailable };
+};
+```
+
+## Drawbacks
+
+So, let's list out some of the drawbacks with this naive implementation:
+
+- ## Not scalable with too much code repetition
+  - The function cannot respond to data changes in the future, and needs to be refactored
+
+To give more clarity, the dynamic data here would refer to things like the Deposit Frequency. In the case where there's only "One-Time" and "Monthly", then this code would work completely fine. However, what if more gets added in the future? We would need to do some copy pasting and a lot of code reptition if that's the case. Even in this case, there is a lot of code repetition already.
+
+The obvious first step would be to refactor the parts that are checking for the frequency. This can be condensed down to one loop. We will not do this here yet though, as this was just an initial implementation without knowing the full scope of the requirements. Let's move on for now, as we will tackle and solve this issue in the next article.
+
+As mentioned previously, each deposit plan can only contain one portfolio. Another key assumption we make is that there is no priority assigned to the deposit plans. In the case that there are 2 or more deposit plans present, they will be processed at the same time. The proportional allocation will be based on the total amount of all deposit plans present at the time of the calculation.
+
+Here is an example of 2 different scenarios to illustrate the difference in my approach, and another valid approach:
+
+### Given a $1000 deposit and the following plans:
+
+### Deposit Plan 1
+
+Portfolio 1: One-Time, $100
+
+Portfolio 2: One-Time, $400
+
+### Deposit Plan 2
+
+Portfolio 1: One-Time, $400
+
+Portfolio 2: One-Time, $400
+
+## Scenario 1 (Handle active deposit plans at the same time without a priority given.)
+
+Total amount to be paid for portfolio 1 = $100 (plan 1) + 400 (plan 2) = $500 total
+
+Total amount to be paid for portfolio 2 = $400 (plan 1) + 400 (plan 2) = $800 total
+
+This is a 500:800 = 0.625:1 ratio
+
+Next, we need to check available funds. We have $1000 in total, and need to pay $500 + $800 = $1300 in total.
+
+Since it's not enough, we will just allocate $1000 according to this ratio.
+
+To get the proportional allocation, we can do totalfunds/totalallocation = 1000/1300 = 0.7692307...
+
+Since this result has many decimal places, we do that step at the end.
+
+Calculating the allocation:
+
+Portfolio 1 = $500 \ 1000/1300 = $384.615 = $384.62 (rounded up)
+
+Portfolio 2 = $800 \ 1000/1300 = $615.384 = $615.38 (rounded down regardless to ensure the total matches the input)
+
+Total Funds Allocated = $384.62 + $615.38 = $1000
+
+## Scenario 2 (Handle deposit plans individually based on a priority, likely date by default)
+
+Total amount for deposit plan 1 = $100 (portfolio 1) + 400 (portfolio 2) = $500
+
+$1000 is enough to pay it off, so both deposit plans are allocated fully with $500 remaining.
+
+Now, deposit plan 2 has $800 specified for both portfolios. Both portfolios are allocated $400 in this plan.
+
+The ratio is 400:400 = 1:1, so the remaining $500 gets divided equally so that both portfolios get $250 each.
+
+Final Allocation for Scenario 1:
+Portfolio 1 = $100 + $250 = $350
+Portfolio 2 = $400 + $250 = $650
+
+Total Funds Allocated = $1000
+
+That is all for this section for now. There are several ways to refactor and improve this solution, which will be discussed in the next article. Stay tuned for a much better implementation coming soon!
