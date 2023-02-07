@@ -15,7 +15,7 @@ export default (props) => <ArticleLayout meta={meta} {...props} />;
 - [The function to calculate the final allocation](https://github.com/lvince95/my-next-app/blob/main/src/features/deposit/utils/deposit.ts)
 - [The types used to define the data structure](https://github.com/lvince95/my-next-app/blob/main/src/features/deposit/types/deposit.d.ts)
 - [Prisma schema to define the database models](https://github.com/lvince95/my-next-app/blob/main/prisma/schema.prisma)
-- [Cypress e2e tests](https://github.com/lvince95/my-next-app/blob/main/cypress/e2e/calculator.cy.ts)
+- [Cypress e2e tests](https://github.com/lvince95/my-next-app/blob/main/cypress/e2e/deposit.cy.ts)
 
 In this application, we can make multiple deposit plans. Essentially, each deposit plan is like a contract that specifies the frequency and amount of money that should be deposited into the assigned portfolio.
 
@@ -143,7 +143,7 @@ The obvious first step would be to refactor the parts that are checking for the 
 
 As mentioned previously, each deposit plan can only contain one portfolio. Another key assumption we make is that there is no priority assigned to the deposit plans. In the case that there are 2 or more deposit plans present, they will be processed at the same time. The proportional allocation will be based on the total amount of all deposit plans present at the time of the calculation.
 
-Here is an example of 2 different scenarios to illustrate the difference in my approach, and another valid approach:
+Here is an example of 2 different scenarios to illustrate the difference in my approach, and another valid approach. Honestly, the latter definitely seems more sensible in hindsight...
 
 ### Given a $1000 deposit and the following plans:
 
@@ -177,9 +177,9 @@ Since this result has many decimal places, we do that step at the end.
 
 Calculating the allocation:
 
-Portfolio 1 = $500 \ 1000/1300 = $384.615 = $384.62 (rounded up)
+Portfolio 1 = $500 \* 1000/1300 = $384.615 = $384.62 (rounded up)
 
-Portfolio 2 = $800 \ 1000/1300 = $615.384 = $615.38 (rounded down regardless to ensure the total matches the input)
+Portfolio 2 = $800 \* 1000/1300 = $615.384 = $615.38 (rounded down regardless to ensure the total matches the input)
 
 Total Funds Allocated = $384.62 + $615.38 = $1000
 
@@ -193,7 +193,8 @@ Now, deposit plan 2 has $800 specified for both portfolios. Both portfolios are 
 
 The ratio is 400:400 = 1:1, so the remaining $500 gets divided equally so that both portfolios get $250 each.
 
-Final Allocation for Scenario 1:
+Final Allocation:
+
 Portfolio 1 = $100 + $250 = $350
 Portfolio 2 = $400 + $250 = $650
 
