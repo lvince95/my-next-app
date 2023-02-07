@@ -50,7 +50,7 @@ export const DepositDataTable = ({
           <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
             <table className="min-w-full divide-y divide-gray-300">
               <thead>
-                {data.map((item) => (
+                {data.slice(0, 1).map((item) => (
                   <tr key={item.id}>
                     {Object.entries(item).map(([key], index) => {
                       if (index === 1) {
