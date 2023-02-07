@@ -26,6 +26,7 @@ const customJestConfig = {
     '^@/deposit/(.*)$': '<rootDir>/src/features/deposit/$1',
     '^@/icons/(.*)$': '<rootDir>/src/components/Icons/$1',
   },
+  watchPathIgnorePatterns: ['"__mocks__"'],
   testEnvironment: 'jest-environment-jsdom',
 };
 

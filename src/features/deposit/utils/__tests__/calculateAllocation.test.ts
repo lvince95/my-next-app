@@ -5,7 +5,7 @@ import {
   expectedExcessFundsResult,
   testDepositPlans,
   testFundDeposits,
-} from './testData';
+} from '../__mocks__/testData';
 
 const testsToRun = [
   'basic case',
