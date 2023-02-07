@@ -10,7 +10,9 @@ import { DepositPlan, paymentFrequency } from '../types/deposit';
 
 const DepositPlanFormSchema = z.object({
   portfolio: z.string().min(1, 'Required'),
-  amount: z.number().min(1, 'Required'),
+  amount: z
+    .number({ invalid_type_error: 'Amount must be a valid number' })
+    .min(1, 'Required'),
   depositFrequency: z.string().min(1, 'Required'),
 });
 
@@ -92,7 +94,7 @@ export const DepositPlanForm = () => {
                         </div>
                         <Input
                           id="amount"
-                          type="text"
+                          type="number"
                           className="mt-1 block w-full pl-7 pr-12"
                           placeholder="0.00"
                           aria-label="deposit amount"
