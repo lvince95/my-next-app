@@ -47,7 +47,7 @@ export const testDepositPlans = new Map<string, DepositPlanDTO[]>([
     'partial case',
     [
       {
-        id: '1',
+        id: 'randomUuid4',
         depositFrequency: 'One-Time',
         plans: [
           { portfolio: testDataPortfolio[0], amount: 100 },
@@ -58,7 +58,7 @@ export const testDepositPlans = new Map<string, DepositPlanDTO[]>([
         createdAt: new Date('2023-02-04'),
       },
       {
-        id: '2',
+        id: 'randomUuid4',
         depositFrequency: 'One-Time',
         plans: [
           { portfolio: testDataPortfolio[0], amount: 400 },
@@ -92,6 +92,114 @@ export const testDepositPlans = new Map<string, DepositPlanDTO[]>([
           { portfolio: testDataPortfolio[1], amount: 400 },
         ],
         priority: 1,
+        completed: false,
+        createdAt: new Date('2023-02-04'),
+      },
+    ],
+  ],
+  [
+    'partial different frequency case',
+    [
+      {
+        id: 'randomUuid4',
+        depositFrequency: 'One-Time',
+        plans: [
+          { portfolio: testDataPortfolio[0], amount: 100 },
+          { portfolio: testDataPortfolio[1], amount: 400 },
+        ],
+        priority: 1,
+        completed: false,
+        createdAt: new Date('2023-02-04'),
+      },
+      {
+        id: 'randomUuid4',
+        depositFrequency: 'Monthly',
+        plans: [
+          { portfolio: testDataPortfolio[0], amount: 400 },
+          { portfolio: testDataPortfolio[1], amount: 400 },
+        ],
+        priority: 2,
+        completed: false,
+        createdAt: new Date('2023-02-04'),
+      },
+    ],
+  ],
+  [
+    'partial different frequency reversed case',
+    [
+      {
+        id: 'randomUuid4',
+        depositFrequency: 'Monthly',
+        plans: [
+          { portfolio: testDataPortfolio[0], amount: 100 },
+          { portfolio: testDataPortfolio[1], amount: 400 },
+        ],
+        priority: 1,
+        completed: false,
+        createdAt: new Date('2023-02-04'),
+      },
+      {
+        id: 'randomUuid4',
+        depositFrequency: 'One-Time',
+        plans: [
+          { portfolio: testDataPortfolio[0], amount: 400 },
+          { portfolio: testDataPortfolio[1], amount: 400 },
+        ],
+        priority: 2,
+        completed: false,
+        createdAt: new Date('2023-02-04'),
+      },
+    ],
+  ],
+  [
+    'partial date case',
+    [
+      {
+        id: 'randomUuid4',
+        depositFrequency: 'One-Time',
+        plans: [
+          { portfolio: testDataPortfolio[0], amount: 100 },
+          { portfolio: testDataPortfolio[1], amount: 400 },
+        ],
+        priority: 0,
+        completed: false,
+        createdAt: new Date('2023-02-04'),
+      },
+      {
+        id: 'randomUuid4',
+        depositFrequency: 'One-Time',
+        plans: [
+          { portfolio: testDataPortfolio[0], amount: 400 },
+          { portfolio: testDataPortfolio[1], amount: 400 },
+        ],
+        priority: 0,
+        completed: false,
+        createdAt: new Date('2023-02-02'),
+      },
+    ],
+  ],
+  [
+    'partial date reversed case',
+    [
+      {
+        id: 'randomUuid4',
+        depositFrequency: 'One-Time',
+        plans: [
+          { portfolio: testDataPortfolio[0], amount: 100 },
+          { portfolio: testDataPortfolio[1], amount: 400 },
+        ],
+        priority: 0,
+        completed: false,
+        createdAt: new Date('2023-02-02'),
+      },
+      {
+        id: 'randomUuid4',
+        depositFrequency: 'One-Time',
+        plans: [
+          { portfolio: testDataPortfolio[0], amount: 400 },
+          { portfolio: testDataPortfolio[1], amount: 400 },
+        ],
+        priority: 0,
         completed: false,
         createdAt: new Date('2023-02-04'),
       },
@@ -167,6 +275,58 @@ export const testFundDeposits = new Map<string, FundDepositDTO[]>([
     ],
   ],
   [
+    'partial different frequency case',
+    [
+      {
+        id: 'randUuid',
+        amount: 500,
+      },
+      {
+        id: 'randUuid2',
+        amount: 500,
+      },
+    ],
+  ],
+  [
+    'partial different frequency reversed case',
+    [
+      {
+        id: 'randUuid',
+        amount: 500,
+      },
+      {
+        id: 'randUuid2',
+        amount: 500,
+      },
+    ],
+  ],
+  [
+    'partial date case',
+    [
+      {
+        id: 'randUuid',
+        amount: 500,
+      },
+      {
+        id: 'randUuid2',
+        amount: 500,
+      },
+    ],
+  ],
+  [
+    'partial date reversed case',
+    [
+      {
+        id: 'randUuid',
+        amount: 500,
+      },
+      {
+        id: 'randUuid2',
+        amount: 500,
+      },
+    ],
+  ],
+  [
     'excess funds case',
     [
       {
@@ -213,6 +373,58 @@ export const expectedPortfolioResult = new Map<
   ],
   [
     'partial reversed case',
+    [
+      {
+        name: 'High Risk',
+        allocation: 350,
+      },
+      {
+        name: 'Retirement',
+        allocation: 650,
+      },
+    ],
+  ],
+  [
+    'partial different frequency case',
+    [
+      {
+        name: 'High Risk',
+        allocation: 350,
+      },
+      {
+        name: 'Retirement',
+        allocation: 650,
+      },
+    ],
+  ],
+  [
+    'partial different frequency reversed case',
+    [
+      {
+        name: 'High Risk',
+        allocation: 440,
+      },
+      {
+        name: 'Retirement',
+        allocation: 560,
+      },
+    ],
+  ],
+  [
+    'partial date case',
+    [
+      {
+        name: 'High Risk',
+        allocation: 440,
+      },
+      {
+        name: 'Retirement',
+        allocation: 560,
+      },
+    ],
+  ],
+  [
+    'partial date reversed case',
     [
       {
         name: 'High Risk',
@@ -322,6 +534,114 @@ export const expectedDepositResult = new Map<string, DepositPlanDTO[]>([
     ],
   ],
   [
+    'partial different frequency case',
+    [
+      {
+        id: 'randomUuid4',
+        depositFrequency: 'One-Time',
+        plans: [
+          { portfolio: testDataPortfolio[0], amount: 0 },
+          { portfolio: testDataPortfolio[1], amount: 0 },
+        ],
+        priority: 1,
+        completed: true,
+        createdAt: new Date('2023-02-04'),
+      },
+      {
+        id: 'randomUuid4',
+        depositFrequency: 'One-Time',
+        plans: [
+          { portfolio: testDataPortfolio[0], amount: 150 },
+          { portfolio: testDataPortfolio[1], amount: 150 },
+        ],
+        priority: 2,
+        completed: false,
+        createdAt: new Date('2023-02-04'),
+      },
+    ],
+  ],
+  [
+    'partial different frequency reversed case',
+    [
+      {
+        id: 'randomUuid4',
+        depositFrequency: 'One-Time',
+        plans: [
+          { portfolio: testDataPortfolio[0], amount: 60 },
+          { portfolio: testDataPortfolio[1], amount: 240 },
+        ],
+        priority: 1,
+        completed: false,
+        createdAt: new Date('2023-02-04'),
+      },
+      {
+        id: 'randomUuid4',
+        depositFrequency: 'One-Time',
+        plans: [
+          { portfolio: testDataPortfolio[0], amount: 0 },
+          { portfolio: testDataPortfolio[1], amount: 0 },
+        ],
+        priority: 2,
+        completed: true,
+        createdAt: new Date('2023-02-04'),
+      },
+    ],
+  ],
+  [
+    'partial date case',
+    [
+      {
+        id: 'randomUuid4',
+        depositFrequency: 'One-Time',
+        plans: [
+          { portfolio: testDataPortfolio[0], amount: 60 },
+          { portfolio: testDataPortfolio[1], amount: 240 },
+        ],
+        priority: 0,
+        completed: false,
+        createdAt: new Date('2023-02-04'),
+      },
+      {
+        id: 'randomUuid4',
+        depositFrequency: 'One-Time',
+        plans: [
+          { portfolio: testDataPortfolio[0], amount: 0 },
+          { portfolio: testDataPortfolio[1], amount: 0 },
+        ],
+        priority: 0,
+        completed: true,
+        createdAt: new Date('2023-02-02'),
+      },
+    ],
+  ],
+  [
+    'partial date reversed case',
+    [
+      {
+        id: 'randomUuid4',
+        depositFrequency: 'One-Time',
+        plans: [
+          { portfolio: testDataPortfolio[0], amount: 0 },
+          { portfolio: testDataPortfolio[1], amount: 0 },
+        ],
+        priority: 0,
+        completed: true,
+        createdAt: new Date('2023-02-02'),
+      },
+      {
+        id: 'randomUuid4',
+        depositFrequency: 'One-Time',
+        plans: [
+          { portfolio: testDataPortfolio[0], amount: 150 },
+          { portfolio: testDataPortfolio[1], amount: 150 },
+        ],
+        priority: 0,
+        completed: false,
+        createdAt: new Date('2023-02-04'),
+      },
+    ],
+  ],
+  [
     'excess funds case',
     [
       {
@@ -354,5 +674,9 @@ export const expectedExcessFundsResult = new Map<string, number>([
   ['basic case', 0],
   ['partial case', 0],
   ['partial reversed case', 0],
+  ['partial different frequency case', 0],
+  ['partial different frequency reversed case', 0],
+  ['partial date case', 0],
+  ['partial date reversed case', 0],
   ['excess funds case', 1000],
 ]);

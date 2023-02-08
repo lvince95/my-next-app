@@ -11,6 +11,10 @@ const testsToRun = [
   'basic case',
   'partial case',
   'partial reversed case',
+  'partial different frequency case',
+  'partial different frequency reversed case',
+  'partial date case',
+  'partial date reversed case',
   'excess funds case',
 ];
 
