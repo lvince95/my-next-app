@@ -1,0 +1,196 @@
+import { ArticleLayout } from '@/components/Layout/ArticleLayout';
+
+export const meta = {
+  author: 'Vincent Lim',
+  date: '2023-02-08',
+  title: 'Testing the improved fund deposit feature',
+  description:
+    'We list the tests made, and also the test cases used. All test cases are listed here in detail.',
+};
+
+export default (props) => <ArticleLayout meta={meta} {...props} />;
+
+## Links to the source code and more for reference:
+
+- [Unit Tests](https://github.com/lvince95/my-next-app/blob/main/src/features/deposit/utils/__tests__/calculateAllocation.test.ts)
+- [Test Data](https://github.com/lvince95/my-next-app/blob/main/src/features/deposit/utils/__mocks__/testData.ts)
+
+## Introduction
+
+The tests are done in a scalable way as well. Whenever new test cases are added, they would be subjected to all of the current tests done. The tests done on all test cases are:
+
+- Check if the portfolio allocation is accurate
+- Check if the deposit plan amounts get deducted after allocation
+- Check if the deposit plans that have been fully allocated are flagged as completed
+- Check if there are any excess funds (should be 0 if none)
+
+The test cases used are detailed below.
+
+### Basic case
+
+Deposit Plans
+
+- One-Time
+  - High Risk - $10000
+  - Retirement - $500
+- Monthly
+  - High Risk - $0
+  - Retirement - $500
+
+Funds Deposited
+
+- $10500
+- $100
+
+Expected Result:
+
+- High Risk = $10000
+- Retirment = $600
+
+### Partial case (Funds < Total Allocation)
+
+Deposit Plans
+
+- One-Time (Priority = 1)
+  - High Risk - $100
+  - Retirement - $400
+- One-Time (Priority = 2)
+  - High Risk - $400
+  - Retirement - $400
+
+Funds Deposited
+
+- $500
+- $500
+
+Expected Result
+
+- High Risk = $440
+- Retirment = $560
+
+### Partial reversed case (The partial case, with the priority reversed)
+
+Deposit Plans
+
+- One-Time (Priority = 2)
+  - High Risk - $100
+  - Retirement - $400
+- One-Time (Priority = 1)
+  - High Risk - $400
+  - Retirement - $400
+
+Funds Deposited
+
+- $500
+- $500
+
+Expected Result
+
+- High Risk = $350
+- Retirment = $650
+
+### Partial different frequency case (The partial case, with different frequencies)
+
+Deposit Plans
+
+- One-Time (Priority = 1)
+  - High Risk - $100
+  - Retirement - $400
+- Monthly (Priority = 2)
+  - High Risk - $400
+  - Retirement - $400
+
+Funds Deposited
+
+- $500
+- $500
+
+Expected Result
+
+- High Risk = $350
+- Retirment = $650
+
+### Partial different frequency reversed case (Switch the frequencies)
+
+Deposit Plans
+
+- Monthly (Priority = 1)
+  - High Risk - $100
+  - Retirement - $400
+- One-Time (Priority = 2)
+  - High Risk - $400
+  - Retirement - $400
+
+Funds Deposited
+
+- $500
+- $500
+
+Expected Result
+
+- High Risk = $440
+- Retirment = $560
+
+### Partial date case (The partial case, with no priority but different dates)
+
+Deposit Plans
+
+- One-Time (Date = 2022-02-04)
+  - High Risk - $100
+  - Retirement - $400
+- One-Time (Date = 2022-02-02)
+  - High Risk - $400
+  - Retirement - $400
+
+Funds Deposited
+
+- $500
+- $500
+
+Expected Result
+
+- High Risk = $440
+- Retirment = $560
+
+### Partial date reversed case (Switch the dates)
+
+Deposit Plans
+
+- One-Time (Date = 2022-02-02)
+  - High Risk - $100
+  - Retirement - $400
+- One-Time (Date = 2022-02-04)
+  - High Risk - $400
+  - Retirement - $400
+
+Funds Deposited
+
+- $500
+- $500
+
+Expected Result
+
+- High Risk = $350
+- Retirment = $650
+
+### Excess funds case (The basic case, with excess funds)
+
+Deposit Plans
+
+- One-Time
+  - High Risk - $10000
+  - Retirement - $500
+- Monthly
+  - High Risk - $0
+  - Retirement - $500
+
+Funds Deposited
+
+- $10500
+- $1100
+
+Expected Result:
+
+- High Risk = $10000
+- Retirment = $600
+- $1000 returned
