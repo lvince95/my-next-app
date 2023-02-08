@@ -113,6 +113,7 @@ export const SummaryForm = () => {
                 type="submit"
                 className="w-full flex-none lg:w-20"
                 variant="teal"
+                disabled={true}
               >
                 Submit
               </Button>
