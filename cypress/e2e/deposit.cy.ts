@@ -42,7 +42,7 @@ describe('e2e', () => {
     cy.wait(500);
 
     cy.findByRole('button', {
-      name: /deposit funds/i,
+      name: /invest now/i,
     }).click();
 
     cy.findByRole('button', {
