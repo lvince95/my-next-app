@@ -15,7 +15,9 @@ and create a model/table for this in the database. This allows other tables to r
 
 However, that approach means that we have to create another table to store it (which could actually be what you want to allow admins to add more from an admin dashboard for example).
 
-With the following approach using readonly const variables (you can use enums too), we do not have to create a database table and have relations to other tables for it. There are pros and cons to both.
+With the following approach using readonly const variables (you can use enums too), we do not have to create a database table and have relations to other tables for it. 
+
+Creating the table is more scalable and easier to manage, but I wanted to do it this way just to highlight how readonly consts can be used here.
 
 This is just an alternative way showing type manipulation to keep them as readonly const variables while constraining the type
 */
@@ -36,6 +38,7 @@ export const depositFrequencyMap = depositFrequency.reduce((acc, df) => {
   return acc;
 }, new Map<DepositFrequency, number>());
 
+// DB-like model structure
 export type Portfolio = {
   id: number;
   name: string;
@@ -44,7 +47,6 @@ export type Portfolio = {
   updatedAt: Date;
 };
 
-// store the portfolios in the plans attribute as the whole object for now. should be portfolioId ideally. default value of priority should be 0
 export type DepositPlan = {
   id: number;
   depositFrequency: DepositFrequency;
@@ -54,11 +56,6 @@ export type DepositPlan = {
   createdAt: Date;
   updatedAt: Date;
 };
-
-/*
-  representation of the frontend type for the fund deposits
-  id is a string because it is assumed to be a random uuid. this id is not sent to the database because it is going to be created as a new entry in the database, with an autoincrement id set up already. No dates are needed as well since those will be created in the database.
-*/
 
 export type FundDeposit = {
   id: number;
