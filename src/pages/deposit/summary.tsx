@@ -13,8 +13,11 @@ const DepositSummaryPage = () => {
   return (
     <>
       <Head>
-        <title>Deposit Funds -Summary</title>
-        <meta name="description" content="Deposit Funds - Summary" />
+        <title>Summary</title>
+        <meta
+          name="description"
+          content="Summary of all the deposit plans and fund deposits that will be used in your deposit"
+        />
       </Head>
       <SimpleLayoutWithBackButtonAndProgress
         title="Deposit Summary"

@@ -13,8 +13,8 @@ const DepositPlanPage = () => {
   return (
     <>
       <Head>
-        <title>Deposit Funds - Deposit Plan</title>
-        <meta name="description" content="Deposit Funds - Deposit Plan" />
+        <title>Deposit Plan</title>
+        <meta name="description" content="Add your deposit plans here" />
       </Head>
       <SimpleLayoutWithBackButtonAndProgress
         title="Deposit Funds"

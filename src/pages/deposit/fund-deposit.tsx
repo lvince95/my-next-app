@@ -13,8 +13,11 @@ const FundDepositPage = () => {
   return (
     <>
       <Head>
-        <title>Deposit Funds - Fund Deposit</title>
-        <meta name="description" content="Deposit Funds - Fund Deposit" />
+        <title>Fund Deposit</title>
+        <meta
+          name="description"
+          content="Deposit Funds with just a few clicks on our application"
+        />
       </Head>
       <SimpleLayoutWithBackButtonAndProgress
         title="Deposit Funds"
