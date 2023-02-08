@@ -34,6 +34,8 @@ In the previous article, we went over the initial approach which had a lot of ho
   - If the funds are less than the total allocation, all available funds are used and there will be deposit plans that are partially paid, and others that are completely unpaid. These are tracked with the amount and completed status
   - If these scenarios do not need to be handled, we can always just throw an error before the calculations begin, since we can sum up the total funds needed vs available funds at the very beginning.
 
+A current drawback with this implementation is that there is no handling for rounding the numbers. Since multiplication and division are involved, the result of those operations may not add up to the original without some form of rounding. Besides trying to combine more operations in 1 expression/line, methods like [Banker's Rounding](https://rounding.to/understanding-the-bankers-rounding/) can potentially be implemented depending on the use case to solve these problems.
+
 ## Types
 
 For reference, here is the whole code related to typing the entities before we begin breaking it down individually. Please refer to the source code for some of the longer comments too.
