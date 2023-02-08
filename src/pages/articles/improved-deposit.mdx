@@ -57,6 +57,7 @@ export const depositFrequencyMap = depositFrequency.reduce((acc, df) => {
   return acc;
 }, new Map<DepositFrequency, number>());
 
+// DB-like model structure
 export type Portfolio = {
   id: number;
   name: string;
@@ -65,7 +66,6 @@ export type Portfolio = {
   updatedAt: Date;
 };
 
-// should be portfolioId ideally. default priority should be 0
 export type DepositPlan = {
   id: number;
   depositFrequency: DepositFrequency;
@@ -75,14 +75,6 @@ export type DepositPlan = {
   createdAt: Date;
   updatedAt: Date;
 };
-
-/*
-  representation of the frontend type for the fund deposits
-  id is a string because it is assumed to be a random uuid. 
-  this id is not sent to the database because it is going to be created 
-  as a new entry in the database, with an auto-increment id set up. 
-  No dates are needed as well since those will be created by the backend.
-*/
 
 export type FundDeposit = {
   id: number;
