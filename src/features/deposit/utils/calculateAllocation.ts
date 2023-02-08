@@ -48,14 +48,17 @@ export const optimizedCalculateAllocation = (
     /*
       1. filter the deposit plans that match the current frequency passed in from the loop
       2. sort the filtered deposit plans in descending order based on their own priority
-      3. sorts based on the date in ascending order
+      3. sorts based on the date in ascending order if the priority is the same
       4. loop through each deposit plan using every() instead of forEach() so that we can break
       out of the loop by returning false if we satisfy the condition early
     */
     depositPlans
       .filter((dp) => dp.depositFrequency === frequency)
-      .sort((a, b) => b.priority - a.priority)
-      .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+      .sort(
+        (a, b) =>
+          b.priority - a.priority ||
+          a.createdAt.getTime() - b.createdAt.getTime(),
+      )
       .every((dp) => {
         // break out of the current deposit plan loop when no more funds are left
         if (totalFundsAvailable <= 0) return false;
