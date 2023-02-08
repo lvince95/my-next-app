@@ -68,7 +68,7 @@ const Deposit = () => {
               variant="teal"
               onClick={() => router.push('/deposit/deposit-plan')}
             >
-              Deposit Funds
+              Invest Now
             </Button>
           </div>
           <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
