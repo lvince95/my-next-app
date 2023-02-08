@@ -1,7 +1,7 @@
 import { Footer } from '@/components/Footer';
 import { Header } from '@/components/Header';
 import type { AppProps, AppType } from 'next/app';
-
+import NextNProgress from 'nextjs-progressbar';
 import '@/styles/tailwind.css';
 import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
@@ -28,6 +28,7 @@ const App = (({ Component, pageProps }: AppProps) => {
 
   return (
     <>
+      <NextNProgress color="#0ea5e9" />
       <div className="fixed inset-0 flex justify-center sm:px-8">
         <div className="flex w-full max-w-7xl lg:px-8">
           <div className="w-full bg-white ring-1 ring-zinc-100 dark:bg-zinc-900 dark:ring-zinc-300/20" />
