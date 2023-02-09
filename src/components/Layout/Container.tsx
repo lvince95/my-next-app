@@ -52,6 +52,7 @@ const InnerContainer = ({
 type ContainerProps = {
   children?: ReactNode;
   className?: string;
+  upperBorder?: boolean;
 };
 
 export const Container = ({ children, ...props }: ContainerProps) => {
