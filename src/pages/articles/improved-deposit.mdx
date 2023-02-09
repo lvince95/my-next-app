@@ -392,6 +392,14 @@ First, we calculate the total funds we have at our disposal and store it in a va
 
 Next, we want to sort the frequencies we have. We need to determine the order in which we process the plans, and the first metric we will use is the given frequency.
 
+If you notice, we have an undefined check and return when doing a `depositFrequencyMap.get(x: DepositFrequncy)` operation. So, this might seem werid right?
+
+Firstly, we have the `sortedDepositFrequencies` which only contain DepositFrequency items. So, if we create an array from a set containing `DepositFrequency` items, that array can only contain `DepositFrequency` items. So if we use a `get()` using these items, there shouldn't be a case where it can be undefined because our `depositFrequencyMap` readonly const will always have those values.
+
+If our 'depositFrequencyMap' is empty or does not have the items we need, then the `DepositFrequency` type will not contain these missing values as well, because the `DepositFrequency` type is derived from the items contained `depositFrequencyMap`.
+
+Typescript doesn't know this though, and is unable to infer in this case. As a result, we have to handle for undefined, since it still thinks that the `get()` operation might not find the appropriate value. We could use a non null assertion, but that's generally not recommended if possible (and your linter would likely pick it up as well), so for this case we'll just return 0 which solves the problem.
+
 ```ts
 sortedDepositFrequencies.forEach((frequency) => {
   depositPlans
