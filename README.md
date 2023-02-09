@@ -52,12 +52,11 @@ This is a fullstack application that consists of:
 
 - ⚡ Full-stack React with Next.js
 - ⚡ Database ingeration with Prisma
-- ⚡ [Progressive Web App](https://web.dev/pwa-checklist/) with good Lighthouse scores
+- ⚡ Styled with TailwindCSS and [HeadlessUI](https://headlessui.com)
 - 🧙‍♂️ E2E typesafety and advanced network response caching with tRPC
 - 🧙‍♂️ Effortless local state management with [Zustand](https://github.com/pmndrs/zustand)
 - 🧙‍♂️ Improved form experience with [React Hook Form](https://react-hook-form.com) with [Zod](https://zod.dev) as the schema validation library
 - 🧙‍♂️ Fluid animations with [Framer Motion](https://www.framer.com/motion)
-- 🧙‍♂️ Styled with TailwindCSS and [HeadlessUI](https://headlessui.com)
 - 🎨 Clean code with ESLint + Prettier configured
 - 🎨 Scalable and maintainable folder structure
 - 💚 Pre-commit hooks with [Husky](https://github.com/typicode/husky) and [lint-staged](https://github.com/okonet/lint-staged) to catch errors before you commit
