@@ -338,6 +338,8 @@ export const calculateAllocation = (
 
 Honestly, the comments do a pretty good job of explaining each step of the process and the reasons why. Regardless, I will still go over some of my thought processes since it may add more clarity.
 
+### Initialization
+
 ```ts
 // keep a map to keep track of the portfolio allocations
 const portfolios = new Map<number, PortfolioDTO>();
@@ -354,6 +356,8 @@ Since Map keys are unique, and can contain an object as its value, it is the per
 
 As for the deposit frequencies, we only get access to it's name. We also do not want duplicates because we want to find out how many frequencies we are dealing with. As such, a Set is a good choice here.
 
+### Getting all deposit frequencies and portfolios
+
 ```ts
 // get all unique portfolios and frequencies
 depositPlans.forEach((plan) => {
@@ -369,6 +373,8 @@ depositPlans.forEach((plan) => {
 We loop through all the deposit plans to find all the portfolios available. We set them in the map we initialized earlier, and give it a default value of 0 for the allocation since no calculations have been made yet.
 
 At the same time, we also find all the distinct deposit frequencies available, and add it to the set.
+
+### Calculate total funds and sorting the deposit frequencies found
 
 ```ts
 // get the total funds available
@@ -394,11 +400,13 @@ Next, we want to sort the frequencies we have. We need to determine the order in
 
 If you notice, we have an undefined check and return when doing a `depositFrequencyMap.get(x: DepositFrequncy)` operation. So, this might seem werid right?
 
-Firstly, we have the `sortedDepositFrequencies` which only contain DepositFrequency items. So, if we create an array from a set containing `DepositFrequency` items, that array can only contain `DepositFrequency` items. So if we use a `get()` using these items, there shouldn't be a case where it can be undefined because our `depositFrequencyMap` readonly const will always have those values.
+Firstly, we have the `sortedDepositFrequencies` which only contain `DepositFrequency` items. So, if we create an array from a set containing `DepositFrequency` items, that array can only contain `DepositFrequency` items. So if we use a `get()` using these items, there shouldn't be a case where it can be undefined because our `depositFrequencyMap` always have values from the readonly const we defined.
 
 If our 'depositFrequencyMap' is empty or does not have the items we need, then the `DepositFrequency` type will not contain these missing values as well, because the `DepositFrequency` type is derived from the items contained `depositFrequencyMap`. In reality, if the `depositFrequencyMap` is empty or does not contain a specific item, the `sort(a, b)` operation that we perform on the `depositFrequenciesSet` will already handle this case for us. Sorting on an empty set does nothing! And if there are items in the `depositFrequenciesSet`, those items must also be present in the `depositFrequencyMap` because of the relationship between them!
 
 Typescript doesn't know this though, and is unable to infer in this case. As a result, we have to handle for undefined, since it still thinks that the `get()` operation might not find the appropriate value. We could use a non null assertion, but that's generally not recommended if possible (and your linter would likely pick it up as well), so for this case we'll just return 0 which solves the problem.
+
+### Processing the deposit plans
 
 ```ts
 sortedDepositFrequencies.forEach((frequency) => {
@@ -414,6 +422,8 @@ We start by looping through the available frequencies, starting with the frequen
 Next, we need to sort the plans themselves by their priority as well. A given plan may have a higher priority than others, which means that it should be processed first. In addition to the priority (which may be all equal), we also sort them by the date after. This is to handle cases where plans have the same priority, which would mean that they'll need to be sorted with a sensible value, which is usually the created date.
 
 Now that we have filtered the deposit plans to have the correct frequency, and are ordered by priority and date, we loop through the filtered and sorted array. We use `every()` here so that we can break out of the loop by returning false if we run out of funds to allocate.
+
+### Getting the allocation for each deposit plan
 
 ```ts
 const dpAllocation = dp.plans.reduce((sum, plan) => sum + plan.amount, 0);
@@ -433,6 +443,8 @@ With the total allocation required for the current plan, we then check if we hav
 
 For individual allocation, we get the amount by using the ratio of their allocations. We can essentially just divide the funds we have over the sum of all the allocations to get a factor that we can use.
 
+### Calculating the allocation for each portfolio in the current deposit plan
+
 ```ts
 dp.plans.forEach((p) => {
   const prevAllocation = portfolios.get(p.portfolio.id)?.allocation ?? 0;
@@ -449,6 +461,8 @@ dp.plans.forEach((p) => {
 With the ratio to be allocated settled, we now loop through each portfolio and amount to be allocated in each deposit plan.
 
 We need to check if the portfolio has already been allocated some funds beforehand. If they have, we'll need to update the allocation (not replace).
+
+### Updating the deposit plan
 
 ```ts
   p.amount -= amountAllocated;
@@ -467,6 +481,8 @@ Notice here that we also subtract of the amount that the portfolio has been allo
 If the deposit plan has been completely paid off, we can mark it as true and continue on.
 
 Lastly, we subtract the funds we have by the amount that we have paid off so that we can continue the loop with the correct amount of funds leftover. Remember that the loop will break if the total funds have reached 0.
+
+### The End
 
 ```ts
 return { portfolios, totalFundsAvailable, depositPlans };
