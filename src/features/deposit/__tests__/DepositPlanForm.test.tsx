@@ -39,7 +39,7 @@ test('should render the form and accept inputs', async () => {
   ).toBeInTheDocument();
 
   expect(
-    screen.getByRole('spinbutton', {
+    screen.getByRole('textbox', {
       name: /amount/i,
     }),
   ).toBeInTheDocument();
@@ -74,7 +74,7 @@ test('should render the form and accept inputs', async () => {
   );
 
   await user.type(
-    screen.getByRole('spinbutton', { name: /amount/i }),
+    screen.getByRole('textbox', { name: /amount/i }),
     testDepositPlans.amount.toString(),
   );
 
