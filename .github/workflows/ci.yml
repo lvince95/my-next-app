@@ -23,14 +23,14 @@ jobs:
 
     steps:
       - name: Begin CI...
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3.6.0
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - name: Cache node modules
-        uses: actions/cache@v3.2.4
+        uses: actions/cache@v3
         env:
           cache-name: cache-node-modules
         with:
@@ -45,9 +45,9 @@ jobs:
 
     steps:
       - name: Begin CI...
-        uses: actions/checkout@v3.30
-      - name: Use cached node modules
-        uses: actions/cache@v3.2.4
+        uses: actions/checkout@v3
+      - name: Cached node modules
+        uses: actions/cache@v3
         env:
           cache-name: cache-node-modules
         with:
@@ -62,9 +62,9 @@ jobs:
 
     steps:
       - name: Begin CI...
-        uses: actions/checkout@v3.30
-      - name: Use cached node modules
-        uses: actions/cache@v3.2.4
+        uses: actions/checkout@v3
+      - name: Cached node modules
+        uses: actions/cache@v3
         env:
           cache-name: cache-node-modules
         with:
@@ -79,9 +79,9 @@ jobs:
 
     steps:
       - name: Begin CI...
-        uses: actions/checkout@v3.30
-      - name: Use cached node modules
-        uses: actions/cache@v3.2.4
+        uses: actions/checkout@v3
+      - name: Cached node modules
+        uses: actions/cache@v3
         env:
           cache-name: cache-node-modules
         with:
@@ -96,9 +96,9 @@ jobs:
 
     steps:
       - name: Begin CI...
-        uses: actions/checkout@v3.30
-      - name: Use cached node modules
-        uses: actions/cache@v3.2.4
+        uses: actions/checkout@v3
+      - name: Cached node modules
+        uses: actions/cache@v3
         env:
           cache-name: cache-node-modules
         with:
