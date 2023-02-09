@@ -54,6 +54,8 @@ jobs:
           key: ${{ runner.os }}-${{ env.cache-name }}-modules-${{ hashFiles('**/package-lock.json') }}
       - name: Build
         run: npm run build --if-present
+        env:
+          CI: false
 
   lint:
     runs-on: ubuntu-latest
