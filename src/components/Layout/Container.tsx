@@ -1,7 +1,8 @@
-import { PropsWithChildren } from 'react';
+import { ReactNode } from 'react';
 import clsx from 'clsx';
 
-type OuterContainerProps = PropsWithChildren & {
+type OuterContainerProps = {
+  children?: ReactNode;
   className?: string;
   upperBorder?: boolean;
 };
@@ -9,7 +10,7 @@ type OuterContainerProps = PropsWithChildren & {
 const OuterContainer = ({
   className,
   children,
-  upperBorder,
+  upperBorder = false,
   ...props
 }: OuterContainerProps) => {
   return (
@@ -28,7 +29,8 @@ const OuterContainer = ({
   );
 };
 
-type InnerContainerProps = PropsWithChildren & {
+type InnerContainerProps = {
+  children?: ReactNode;
   className?: string;
 };
 
@@ -47,18 +49,14 @@ const InnerContainer = ({
   );
 };
 
-type ContainerProps = PropsWithChildren & {
+type ContainerProps = {
+  children?: ReactNode;
   className?: string;
-  upperBorder?: boolean;
 };
 
-export const Container = ({
-  children,
-  upperBorder = false,
-  ...props
-}: ContainerProps) => {
+export const Container = ({ children, ...props }: ContainerProps) => {
   return (
-    <OuterContainer {...props} upperBorder={upperBorder}>
+    <OuterContainer {...props}>
       <InnerContainer>{children}</InnerContainer>
     </OuterContainer>
   );

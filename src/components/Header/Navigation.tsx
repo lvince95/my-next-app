@@ -1,6 +1,6 @@
 import { Popover, Transition } from '@headlessui/react';
 import Link from 'next/link';
-import { Fragment, PropsWithChildren } from 'react';
+import { Fragment } from 'react';
 import { ChevronDownIcon } from '@/icons/ChevronDownIcon';
 import { CloseIcon } from '@/icons/CloseIcon';
 import { NavItem } from './NavItem';
@@ -34,7 +34,7 @@ type NavigationItem = {
   href: string;
 };
 
-type DesktopNavigationProps = PropsWithChildren & {
+type DesktopNavigationProps = {
   className?: string;
 };
 

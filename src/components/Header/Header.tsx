@@ -1,29 +1,31 @@
 import clsx from 'clsx';
 import Link from 'next/link';
 import Image from 'next/image';
-import { PropsWithChildren } from 'react';
 import { Container } from '@/components/Layout/Container';
 import { ModeToggle } from '@/components/ModeToggle/ModeToggle';
 import avatarImage from '@/images/avatar.webp';
 import { Navigation } from './Navigation';
+import { ReactNode } from 'react';
 
-type AvatarContainerProps = PropsWithChildren & {
+type AvatarContainerProps = {
   className?: string;
+  children?: ReactNode;
 };
 
-const AvatarContainer = ({ className, ...props }: AvatarContainerProps) => {
+const AvatarContainer = ({ className, children }: AvatarContainerProps) => {
   return (
     <div
       className={clsx(
         className,
         'h-10 w-10 rounded-full bg-white/90 p-0.5 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur dark:bg-zinc-800/90 dark:ring-white/10',
       )}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 };
 
-type AvatarProps = PropsWithChildren & { large?: boolean; className?: string };
+type AvatarProps = { large?: boolean; className?: string };
 
 const Avatar = ({ large = false, className, ...props }: AvatarProps) => {
   return (
