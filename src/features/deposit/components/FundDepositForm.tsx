@@ -79,7 +79,6 @@ export const FundDepositForm = () => {
                         </div>
                         <Input
                           id="amount"
-                          type="number"
                           className="mt-1 block w-full pl-7 pr-12"
                           placeholder="0.00"
                           aria-label="fund deposit amount"
