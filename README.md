@@ -7,7 +7,7 @@
 </h1>
 
 <h3 align="center">
-  My personal website, a fully typesafe Progressive Web App
+  My personal website, a fully typesafe web application
 </h3>
 
 <h3 align="center">
